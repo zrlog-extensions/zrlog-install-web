@@ -16,6 +16,26 @@
         <libOutputPath>lib</libOutputPath>
     </properties>
 
+    <url>https://github.com/zrlog-extensions/install-web</url>
+    <description>ZrLog install service</description>
+
+
+    <developers>
+        <developer>
+            <email>90xchun@gmail.com</email>
+            <url>https://xiaochun.zrlog.com</url>
+        </developer>
+    </developers>
+    <scm>
+        <connection>scm:git:https://github.com/zrlog-extensions/install-web</connection>
+        <developerConnection>scm:git:https://github.com/zrlog-extensions/install-web</developerConnection>
+        <url>https://github.com/zrlog-extensions/install-web</url>
+    </scm>
+    <issueManagement>
+        <system>Github Issue</system>
+        <url>https://github.com/zrlog-extensions/install-web</url>
+    </issueManagement>
+
     <dependencies>
         <dependency>
             <groupId>com.hibegin</groupId>
