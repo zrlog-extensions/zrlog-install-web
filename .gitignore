@@ -1,0 +1,8 @@
+.idea
+target
+lib
+install-web-starter.jar
+sim.pid
+conf/install.lock
+conf/db.properties
+log

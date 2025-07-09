@@ -1,0 +1,89 @@
+package com.zrlog.install.web.controller.api;
+
+import com.hibegin.http.annotation.ResponseBody;
+import com.hibegin.http.server.util.PathUtil;
+import com.hibegin.http.server.web.Controller;
+import com.zrlog.install.business.service.InstallService;
+import com.zrlog.install.business.type.TestConnectDbResult;
+import com.zrlog.install.exception.*;
+import com.zrlog.install.business.service.InstallResourceService;
+import com.zrlog.install.util.StringUtils;
+import com.zrlog.install.web.InstallConstants;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
+/**
+ * 与安装向导相关的路由进行控制
+ * 注意 install.lock 文件相当重要，如果不是重新安装请不要删除这个自动生成的文件
+ */
+public class ApiInstallController extends Controller {
+
+    public static String JDBC_URL_BASE_QUERY_PARAM = "characterEncoding=UTF-8&allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=GMT";
+
+    /**
+     * 检查数据库是否可以正常连接使用，无法连接时给出相应的提示
+     */
+    @ResponseBody
+    public Map<String,Object> testDbConn() {
+        TestConnectDbResult testConnectDbResult = new InstallService(PathUtil.getConfPath(), getDbConn()).testDbConn();
+        if (testConnectDbResult.getError() != 0) {
+            throw new InstallException(testConnectDbResult);
+        }
+        return new HashMap<>();
+    }
+
+    private Map<String, String> getDbConn() {
+        if (StringUtils.isEmpty(getRequest().getParaToStr("dbHost"))) {
+            throw new MissingDbHostException();
+        }
+        if (StringUtils.isEmpty(getRequest().getParaToStr("dbPort"))) {
+            throw new MissingDbPortException();
+        }
+        if (StringUtils.isEmpty(getRequest().getParaToStr("dbUserName"))) {
+            throw new MissingDbUserNameException();
+        }
+        if (StringUtils.isEmpty(getRequest().getParaToStr("dbName"))) {
+            throw new MissingDbNameException();
+        }
+        Map<String, String> dbConn = new HashMap<>();
+        dbConn.put("user", getRequest().getParaToStr("dbUserName", ""));
+        dbConn.put("password", getRequest().getParaToStr("dbPassword", ""));
+        String dbType = getRequest().getParaToStr("dbType", "mysql");
+        String jdbcUrl = "jdbc:" + dbType + "://" + getRequest().getParaToStr("dbHost") + ":" + getRequest().getParaToStr("dbPort") + "/" + getRequest().getParaToStr("dbName");
+        if (Objects.equals(dbType, "mysql")) {
+            jdbcUrl += "?" + JDBC_URL_BASE_QUERY_PARAM;
+            dbConn.put("driverClass", "com.mysql.cj.jdbc.Driver");
+        }
+        dbConn.put("jdbcUrl", jdbcUrl);
+        System.out.println("dbConn = " + dbConn);
+        return dbConn;
+    }
+
+    /**
+     * 数据库检查通过后，根据填写信息，执行数据表，表数据的初始化
+     */
+    @ResponseBody
+    public Map<String,Object> startInstall() {
+        Map<String, String> configMsg = new HashMap<>();
+        configMsg.put("title", getRequest().getParaToStr("title", ""));
+        configMsg.put("second_title", getRequest().getParaToStr("second_title", ""));
+        configMsg.put("username", getRequest().getParaToStr("username", ""));
+        configMsg.put("password", getRequest().getParaToStr("password", ""));
+        configMsg.put("email", getRequest().getParaToStr("email", ""));
+        if (!new InstallService(PathUtil.getConfPath(), getDbConn(), configMsg).install()) {
+            throw new InstallException(TestConnectDbResult.UNKNOWN);
+        }
+        InstallConstants.installConfig.getAction().installSuccess();
+        return new HashMap<>();
+    }
+
+
+    @ResponseBody
+    public Map<String, Object> installResource() {
+        Map<String, Object> stringObjectMap = new InstallResourceService().installResourceInfo(getRequest());
+        stringObjectMap.put("data",stringObjectMap);
+        return stringObjectMap;
+    }
+}
