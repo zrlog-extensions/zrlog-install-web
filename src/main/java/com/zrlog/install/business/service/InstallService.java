@@ -69,7 +69,7 @@ public class InstallService {
         map.put("language", InstallConstants.installConfig.getAcceptLanguage());
         map.put("rows", 10);
         map.put("template", InstallConstants.installConfig.defaultTemplatePath());
-        map.put("autoUpgradeVersion", "ONE_WEEK");
+        map.put("autoUpgradeVersion", 86400);
         map.put("zrlogSqlVersion", InstallConstants.installConfig.getZrLogSqlVersion());
         return map;
     }
