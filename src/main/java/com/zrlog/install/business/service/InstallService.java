@@ -193,7 +193,7 @@ public class InstallService {
         int logId = 1;
         String insetLog = "INSERT INTO `log`(`logId`,`canComment`,`keywords`,`alias`,`typeId`,`userId`,`title`,`content`,`plain_content`,`markdown`,`digest`,`releaseTime`,`last_update_date`,`rubbish`,`privacy`) VALUES (" + logId + ",?,?,?,1,1,?,?,?,?,?,?,?,?,?)";
         List<Object> params = new ArrayList<>();
-        try (InputStream in = InstallService.class.getResourceAsStream("/init-blog/" + InstallConstants.installConfig.getAcceptLanguage() + ".md")) {
+        try (InputStream in = InstallService.class.getResourceAsStream("/i18n/init-blog/" + InstallConstants.installConfig.getAcceptLanguage() + ".md")) {
             Map<String, Object> data = new HashMap<>();
             data.put("editUrl", "/admin/article-edit?id=" + logId);
             String markdown = new BasicTemplateRender(data, InstallService.class).render(in);

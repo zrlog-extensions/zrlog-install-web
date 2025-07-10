@@ -5,6 +5,8 @@ import com.zrlog.install.business.response.LastVersionInfo;
 import com.zrlog.install.web.InstallAction;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DefaultInstallConfig implements InstallConfig {
     @Override
@@ -48,7 +50,9 @@ public class DefaultInstallConfig implements InstallConfig {
     }
 
     @Override
-    public String getContextPath() {
-        return "/";
+    public List<String> getResourceNameList() {
+        List<String> resourceNameList = new ArrayList<>();
+        resourceNameList.add("");
+        return List.of();
     }
 }

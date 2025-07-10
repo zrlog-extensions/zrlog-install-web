@@ -4,6 +4,7 @@ import com.zrlog.install.business.response.LastVersionInfo;
 import com.zrlog.install.web.InstallAction;
 
 import java.io.File;
+import java.util.List;
 
 public interface InstallConfig {
 
@@ -23,5 +24,5 @@ public interface InstallConfig {
 
     LastVersionInfo getLastVersionInfo();
 
-    String getContextPath();
+    List<String> getResourceNameList();
 }
