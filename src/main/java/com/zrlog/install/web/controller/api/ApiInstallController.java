@@ -2,6 +2,9 @@ package com.zrlog.install.web.controller.api;
 
 import com.hibegin.http.annotation.ResponseBody;
 import com.hibegin.http.server.web.Controller;
+import com.zrlog.install.business.response.InstallResourceResponse;
+import com.zrlog.install.business.response.InstallResultResponse;
+import com.zrlog.install.business.response.TestConnectResponse;
 import com.zrlog.install.business.service.InstallResourceService;
 import com.zrlog.install.business.service.InstallService;
 import com.zrlog.install.business.type.TestConnectDbResult;
@@ -30,12 +33,12 @@ public class ApiInstallController extends Controller {
      * 检查数据库是否可以正常连接使用，无法连接时给出相应的提示
      */
     @ResponseBody
-    public Map<String, Object> testDbConn() {
+    public TestConnectResponse testDbConn() {
         TestConnectDbResult testConnectDbResult = new InstallService(installConfig, getDbConn()).testDbConn();
         if (testConnectDbResult.getError() != 0) {
             throw new InstallException(testConnectDbResult);
         }
-        return new HashMap<>();
+        return new TestConnectResponse();
     }
 
     private Map<String, String> getDbConn() {
@@ -68,7 +71,7 @@ public class ApiInstallController extends Controller {
      * 数据库检查通过后，根据填写信息，执行数据表，表数据的初始化
      */
     @ResponseBody
-    public Map<String, Object> startInstall() {
+    public InstallResultResponse startInstall() {
         Map<String, String> configMsg = new HashMap<>();
         configMsg.put("title", getRequest().getParaToStr("title", ""));
         configMsg.put("second_title", getRequest().getParaToStr("second_title", ""));
@@ -78,14 +81,11 @@ public class ApiInstallController extends Controller {
         if (!new InstallService(installConfig, getDbConn(), configMsg).install()) {
             throw new InstallException(TestConnectDbResult.UNKNOWN);
         }
-        return new HashMap<>();
+        return new InstallResultResponse();
     }
 
-
     @ResponseBody
-    public Map<String, Object> installResource() {
-        Map<String, Object> stringObjectMap = new InstallResourceService().installResourceInfo(getRequest());
-        stringObjectMap.put("data", stringObjectMap);
-        return stringObjectMap;
+    public InstallResourceResponse installResource() {
+        return new InstallResourceResponse(new InstallResourceService().installResourceInfo(getRequest()));
     }
 }
