@@ -14,6 +14,7 @@ public class InstallServerConfig extends AbstractServerConfig {
 
     public InstallServerConfig() {
         serverConfig.addInterceptor(BlogInstallInterceptor.class);
+        //默认
         serverConfig.addInterceptor(MethodInterceptor.class);
         serverConfig.addErrorHandle(400, InstallConstants.installConfig.getErrorHandler());
         serverConfig.addErrorHandle(403, InstallConstants.installConfig.getErrorHandler());

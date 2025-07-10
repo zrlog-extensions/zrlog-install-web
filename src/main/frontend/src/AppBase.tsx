@@ -31,7 +31,7 @@ const AppBase = () => {
     const {modal} = App.useApp();
 
     const loadResourceFromServer = () => {
-        const resourceApi = "/api/public/installResource";
+        const resourceApi = "/api/install/installResource";
         axios
             .get(resourceApi)
             .then(({data}: { data: Record<string, any> }) => {

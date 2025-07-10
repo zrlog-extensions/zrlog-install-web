@@ -12,16 +12,26 @@ import java.util.Objects;
 public class BlogInstallInterceptor implements HandleAbleInterceptor {
     @Override
     public boolean isHandleAble(HttpRequest request) {
-        if (request.getUri().startsWith("/install/static")) {
-            return false;
+        if (request.getUri().startsWith("/install/static/js")) {
+            return true;
         }
         return Objects.equals(request.getUri(), "/install") ||
-                Objects.equals(request.getUri(), "/api/public/installResource") ||
                 request.getUri().startsWith("/api/install/");
+    }
+
+    private boolean isSkipCheck(HttpRequest request) {
+        if (request.getUri().startsWith("/install/static/js")) {
+            return true;
+        }
+        return Objects.equals(request.getUri(), "/api/install/installResource");
     }
 
     @Override
     public boolean doInterceptor(HttpRequest request, HttpResponse response) throws Exception {
+        if (isSkipCheck(request)) {
+            new MethodInterceptor().doInterceptor(request, response);
+            return false;
+        }
         String target = request.getUri();
         if (target.startsWith("/api/install/") && InstallConstants.installConfig.getAction().isInstalled()) {
             throw new InstalledException();

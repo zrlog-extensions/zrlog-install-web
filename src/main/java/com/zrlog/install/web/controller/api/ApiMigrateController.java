@@ -1,4 +1,4 @@
-package com.zrlog.install.web.controller.page;
+package com.zrlog.install.web.controller.api;
 
 import com.hibegin.common.dao.DAO;
 import com.hibegin.common.dao.DataSourceWrapper;
@@ -12,11 +12,12 @@ import com.zrlog.install.web.InstallConstants;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 import java.util.StringJoiner;
 
-public class MigrateController extends Controller {
+public class ApiMigrateController extends Controller {
 
     public void convertToSqliteSqlFile() throws FileNotFoundException {
         if (InstallConstants.installConfig.getAction().isInstalled()) {
@@ -32,7 +33,7 @@ public class MigrateController extends Controller {
         StringJoiner stringJoiner = new StringJoiner(";\n");
         strings.forEach(stringJoiner::add);
         IOUtil.writeStrToFile(stringJoiner.toString(), PathUtil.getConfFile("sqlite.sql"));
-        response.renderHtmlStr("convert success");
+        response.renderJson(new HashMap<>());
     }
 
 
@@ -60,6 +61,6 @@ public class MigrateController extends Controller {
                 }
             }
         }
-        response.renderHtmlStr("doImportSqlite success");
+        response.renderJson(new HashMap<>());
     }
 }
