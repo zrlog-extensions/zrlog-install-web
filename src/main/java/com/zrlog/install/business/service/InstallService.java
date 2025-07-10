@@ -11,7 +11,8 @@ import com.zrlog.install.util.InstallI18nUtil;
 import com.zrlog.install.util.MarkdownUtil;
 import com.zrlog.install.util.SqlConvertUtils;
 import com.zrlog.install.util.StringUtils;
-import com.zrlog.install.web.InstallConstants;
+import com.zrlog.install.web.InstallAction;
+import com.zrlog.install.web.config.InstallConfig;
 import org.jsoup.Jsoup;
 
 import java.io.File;
@@ -32,15 +33,19 @@ public class InstallService {
 
     private static final Logger LOGGER = LoggerUtil.getLogger(InstallService.class);
     private final Map<String, String> dbConn;
-    private Map<String, String> configMsg;
+    private final Map<String, String> configMsg;
+    private final InstallAction installAction;
+    private final InstallConfig installConfig;
 
-    public InstallService(Map<String, String> dbConn, Map<String, String> configMsg) {
+    public InstallService(InstallConfig installConfig, Map<String, String> dbConn, Map<String, String> configMsg) {
         this.dbConn = dbConn;
         this.configMsg = configMsg;
+        this.installAction = installConfig.getAction();
+        this.installConfig = installConfig;
     }
 
-    public InstallService(Map<String, String> dbConn) {
-        this.dbConn = dbConn;
+    public InstallService(InstallConfig installConfig, Map<String, String> dbConn) {
+        this(installConfig, dbConn, null);
     }
 
     /**
@@ -49,7 +54,7 @@ public class InstallService {
      * @return false 表示安装没有正常执行，true 表示初始化数据库成功。
      */
     public boolean install() {
-        if (InstallConstants.installConfig.getAction().isInstalled()) {
+        if (installAction.isInstalled()) {
             return false;
         }
         return startInstall(dbConn, configMsg);
@@ -66,11 +71,11 @@ public class InstallService {
         map.put("appId", UUID.randomUUID().toString());
         map.put("title", Objects.requireNonNullElse(webSite.get("title"), ""));
         map.put("second_title", Objects.requireNonNullElse(webSite.get("second_title"), ""));
-        map.put("language", InstallConstants.installConfig.getAcceptLanguage());
+        map.put("language", installConfig.getAcceptLanguage());
         map.put("rows", 10);
-        map.put("template", InstallConstants.installConfig.defaultTemplatePath());
+        map.put("template", installConfig.defaultTemplatePath());
         map.put("autoUpgradeVersion", 86400);
-        map.put("zrlogSqlVersion", InstallConstants.installConfig.getZrLogSqlVersion());
+        map.put("zrlogSqlVersion", installConfig.getZrLogSqlVersion());
         return map;
     }
 
@@ -125,7 +130,7 @@ public class InstallService {
      * @throws IOException
      */
     private void installSuccess() throws IOException {
-        File dbFile = InstallConstants.installConfig.getDbPropertiesFile();
+        File dbFile = installConfig.getDbPropertiesFile();
         if (dbFile.exists()) {
             dbFile.delete();
         }
@@ -134,9 +139,11 @@ public class InstallService {
         Properties prop = new Properties();
         prop.putAll(dbConn);
         prop.store(new FileOutputStream(dbFile), "This is a database configuration dbFile");
-        File lockFile = InstallConstants.installConfig.getAction().getLockFile();
+        File lockFile = installConfig.getAction().getLockFile();
         lockFile.getParentFile().mkdirs();
         lockFile.createNewFile();
+        //install success
+        installAction.installSuccess();
     }
 
     private boolean startInstall(Map<String, String> dbConn, Map<String, String> blogMsg) {
@@ -186,7 +193,7 @@ public class InstallService {
         int logId = 1;
         String insetLog = "INSERT INTO `log`(`logId`,`canComment`,`keywords`,`alias`,`typeId`,`userId`,`title`,`content`,`plain_content`,`markdown`,`digest`,`releaseTime`,`last_update_date`,`rubbish`,`privacy`) VALUES (" + logId + ",?,?,?,1,1,?,?,?,?,?,?,?,?,?)";
         List<Object> params = new ArrayList<>();
-        try (InputStream in = InstallService.class.getResourceAsStream("/i18n/init-blog/" + InstallConstants.installConfig.getAcceptLanguage() + ".md")) {
+        try (InputStream in = InstallService.class.getResourceAsStream("/i18n/init-blog/" + installConfig.getAcceptLanguage() + ".md")) {
             Map<String, Object> data = new HashMap<>();
             data.put("editUrl", "/admin/article-edit?id=" + logId);
             String markdown = new BasicTemplateRender(data, InstallService.class).render(in);
@@ -232,7 +239,7 @@ public class InstallService {
 
     private boolean initUser(Map<String, String> blogMsg, DAO dao) throws SQLException {
         String insertUserSql = "INSERT INTO `user`( `userId`,`userName`, `password`, `email`,`secretKey`) VALUES (1,?,?,?,?)";
-        return dao.execute(insertUserSql, blogMsg.get("username"), InstallConstants.installConfig.encryptPassword(blogMsg.get("password")), configMsg.get("email"), UUID.randomUUID().toString());
+        return dao.execute(insertUserSql, blogMsg.get("username"), installConfig.encryptPassword(blogMsg.get("password")), configMsg.get("email"), UUID.randomUUID().toString());
     }
 
     private boolean initWebSite(DAO dao) throws SQLException {

@@ -7,7 +7,9 @@ import com.zrlog.install.business.service.InstallService;
 import com.zrlog.install.business.type.TestConnectDbResult;
 import com.zrlog.install.exception.*;
 import com.zrlog.install.util.StringUtils;
+import com.zrlog.install.web.InstallAction;
 import com.zrlog.install.web.InstallConstants;
+import com.zrlog.install.web.config.InstallConfig;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,12 +21,18 @@ import java.util.Objects;
  */
 public class ApiInstallController extends Controller {
 
+    private final InstallConfig installConfig;
+
+    public ApiInstallController() {
+        this.installConfig = InstallConstants.installConfig;
+    }
+
     /**
      * 检查数据库是否可以正常连接使用，无法连接时给出相应的提示
      */
     @ResponseBody
     public Map<String, Object> testDbConn() {
-        TestConnectDbResult testConnectDbResult = new InstallService(getDbConn()).testDbConn();
+        TestConnectDbResult testConnectDbResult = new InstallService(installConfig, getDbConn()).testDbConn();
         if (testConnectDbResult.getError() != 0) {
             throw new InstallException(testConnectDbResult);
         }
@@ -68,10 +76,9 @@ public class ApiInstallController extends Controller {
         configMsg.put("username", getRequest().getParaToStr("username", ""));
         configMsg.put("password", getRequest().getParaToStr("password", ""));
         configMsg.put("email", getRequest().getParaToStr("email", ""));
-        if (!new InstallService(getDbConn(), configMsg).install()) {
+        if (!new InstallService(installConfig, getDbConn(), configMsg).install()) {
             throw new InstallException(TestConnectDbResult.UNKNOWN);
         }
-        InstallConstants.installConfig.getAction().installSuccess();
         return new HashMap<>();
     }
 

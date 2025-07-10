@@ -8,7 +8,6 @@ import com.zrlog.install.web.InstallConstants;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.Objects;
@@ -22,7 +21,7 @@ public class InstallController extends Controller {
     /**
      * 加载安装向导第一个页面数据
      */
-    public void index() throws FileNotFoundException {
+    public void index() {
         InputStream file = InstallController.class.getResourceAsStream("/install/index.html");
         if (Objects.isNull(file)) {
             response.renderCode(404);
