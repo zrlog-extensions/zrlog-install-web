@@ -19,7 +19,7 @@ public class InstallNativeImageResourceUtils {
         resourceNameList.add("/i18n/init-blog/zh_CN.md");
         resourceNameList.add("/i18n/install_en_US.properties");
         resourceNameList.add("/i18n/install_zh_CN.properties");
-        try (InputStream assetJson = InstallNativeImageResourceUtils.class.getResourceAsStream("/install/asset-manifest")) {
+        try (InputStream assetJson = InstallNativeImageResourceUtils.class.getResourceAsStream("/install/asset-manifest.json")) {
             Map<String, Object> assetMap = new Gson().fromJson(new String(assetJson.readAllBytes()), Map.class);
             if (assetMap != null) {
                 resourceNameList.addAll(((Map<String, String>) assetMap.get("files")).values().stream().map(e -> {
