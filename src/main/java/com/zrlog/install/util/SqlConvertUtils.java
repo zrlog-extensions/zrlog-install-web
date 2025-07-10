@@ -140,22 +140,21 @@ public class SqlConvertUtils {
                     .replaceAll("UNIQUE KEY `?(\\w+)` \\(`userName`\\)", "UNIQUE(`userName`)")
                     .replaceAll("UNIQUE KEY `?(\\w+)` \\(`alias`\\)", "UNIQUE(`alias`)")
                     .replaceAll("UNIQUE KEY `?(\\w+)` \\(`postId`\\)", "UNIQUE(`postId`)")
-                    .replaceAll("KEY\\s+`?(\\w+)` \\(`pid`\\),", "")
-                    .replaceAll("KEY\\s+`?(\\w+)` \\(`logId`\\),", "")
-                    .replaceAll("KEY\\s+`?(\\w+)` \\(`typeId`\\),", "")
-                    .replaceAll("KEY\\s+`?(\\w+)` \\(`typeId`\\),", "")
-                    .replaceAll("KEY\\s+`?(\\w+)` \\(`userId`\\),", "")
+                    //移除索引
+                    .replaceAll("KEY\\s+`?(\\w+)`\\s+\\(`?(\\w+)`\\),", "")
+                    .replaceAll("KEY\\s+`?(\\w+)`\\s+\\(`?(\\w+)`\\)", "")
+                    //
                     .replaceAll("bit(1)", "BOOLEAN").replace("DEFAULT b'1'", "")
                     .replace("DEFAULT b'0'", "")
+                    //移除主键
                     .replaceAll("PRIMARY\\s+KEY\\s*\\(\\s*`?(\\w+)`?\\s*\\),", "")
                     .replaceAll("PRIMARY\\s+KEY\\s*\\(\\s*`?(\\w+)`?\\s*\\)", "")
                     .replace("int(11) NOT NULL AUTO_INCREMENT", "INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT")
                     .replaceAll("COMMENT\\s*'([^']*)'", "")
-                    .replace("ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci", "")
-                    .replace("ENGINE=InnoDB DEFAULT CHARSET=utf8", "")
-                    .replace("DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci", "")
+                    .replace("DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci", "")
+                    .replaceAll("\\s+DEFAULT\\s+CHARSET=utf8", "")
                     .replaceAll("AUTO_INCREMENT=\\w+", "")
-                    .replace(",  )", ")");
+                    .replaceAll(",\\s+\\)", ")");
 
             if (cleanText.startsWith("INSERT INTO")) {
                 result.addAll(splitInsertStatements(cleanText));

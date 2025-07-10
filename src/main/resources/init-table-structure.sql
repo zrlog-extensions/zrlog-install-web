@@ -83,8 +83,7 @@ CREATE TABLE `type`
     `arrange_plugin`  varchar(64)  DEFAULT null COMMENT '文章分类统筹重排插件名称',
     PRIMARY KEY (`typeId`),
     UNIQUE KEY `alias` (`alias`),
-    KEY        `pid` (`pid`),
-    CONSTRAINT `type_ibfk_1` FOREIGN KEY (`pid`) REFERENCES `type` (`typeId`)
+    KEY        `pid` (`pid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -137,9 +136,7 @@ CREATE TABLE `log`
     PRIMARY KEY (`logId`),
     KEY                `typeId` (`typeId`),
     KEY                `userId` (`userId`),
-    UNIQUE KEY `alias` (`alias`),
-    CONSTRAINT `log_ibfk_2` FOREIGN KEY (`userId`) REFERENCES `user` (`userId`),
-    CONSTRAINT `log_ibfk_1` FOREIGN KEY (`typeId`) REFERENCES `type` (`typeId`)
+    UNIQUE KEY `alias` (`alias`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 
@@ -167,8 +164,7 @@ CREATE TABLE `comment`
     `reply_id`    int(11) DEFAULT NULL COMMENT '回复评论的ID',
     PRIMARY KEY (`commentId`),
     UNIQUE KEY `postId` (`postId`),
-    KEY           `logId` (`logId`),
-    CONSTRAINT `comment_ibfk_1` FOREIGN KEY (`logId`) REFERENCES `log` (`logId`)
+    KEY           `logId` (`logId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
