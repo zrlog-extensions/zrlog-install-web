@@ -9,7 +9,6 @@ public interface InstallAction {
     void installSuccess();
 
     default File getLockFile() {
-        System.out.println("PathUtil.getConfPath() = " + PathUtil.getConfPath());
         return PathUtil.getConfFile("/install.lock");
     }
 

@@ -53,12 +53,25 @@ type AppState = {
 
 const IndexLayout = () => {
 
+
+    const getDefaultPort = (dbType: string): number => {
+        if (dbType === "webapi") {
+            return 443
+        } else if (dbType === "mysql") {
+            return 3306;
+        }
+        return 0;
+    }
+
     const [state, setState] = useState<AppState>({
         current: 0,
         installed: getRes()['installed'],
         testConnecting: false,
         installing: false,
-        dataBaseInfo: {},
+        dataBaseInfo: {
+            dbType: "mysql",
+            dbPort: getDefaultPort("mysql"),
+        },
         weblogInfo: {},
     })
 
@@ -84,10 +97,20 @@ const IndexLayout = () => {
         if (formDataBaseInfoRef === undefined || formDataBaseInfoRef.current === undefined || formDataBaseInfoRef.current === null) {
             return;
         }
+        //reconfiged port
+        if (changedValues['dbType'] !== undefined) {
+            //@ts-ignore
+            const newPort = getDefaultPort(changedValues['dbType'])
+            //@ts-ignore
+            allValues['dbPort'] = newPort;
+            formDataBaseInfoRef.current.setFieldValue("dbPort", newPort)
+        }
         formDataBaseInfoRef.current.setFieldsValue(changedValues);
-        setState({
-            ...state,
-            dataBaseInfo: allValues,
+        setState((prevState) => {
+            return {
+                ...prevState,
+                dataBaseInfo: allValues,
+            }
         });
     }
 
@@ -160,16 +183,6 @@ const IndexLayout = () => {
         return <></>
     }
 
-    const getDefaultPort = (): string | undefined => {
-        const dbType = state.dataBaseInfo['dbType'];
-        if (dbType === "webapi") {
-            return 443 + "";
-        } else if (dbType === "mysql") {
-            return 3306 + "";
-        }
-        return undefined;
-    }
-
 
     return (
         <Layout style={{
@@ -196,7 +209,7 @@ const IndexLayout = () => {
                 <div className="steps-content" style={{marginTop: '20px'}}>
                     {state.current === 0 && <DisclaimerAgreement/>}
                     {state.current === 1 && (
-                        <Form ref={formDataBaseInfoRef} {...formItemLayout}
+                        <Form ref={formDataBaseInfoRef} initialValues={state.dataBaseInfo} {...formItemLayout}
                               onValuesChange={(k: any, v: any) => setDatabaseValue(k, v)}>
                             <div>
                                 <Title level={3}
@@ -235,7 +248,9 @@ const IndexLayout = () => {
                             </FormItem>
                             <FormItem name='dbPort' label={getRes().installDbPort}
                                       rules={[{required: true}]}>
-                                <Input type='number' placeholder={getDefaultPort()} style={{maxWidth: 108}}/>
+                                <Input type='number'
+                                       placeholder={getDefaultPort(state.dataBaseInfo.dbType as string) + ""}
+                                       style={{maxWidth: 108}}/>
                             </FormItem>
                         </Form>
                     )}

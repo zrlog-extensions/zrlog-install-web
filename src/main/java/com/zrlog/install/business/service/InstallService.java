@@ -31,22 +31,15 @@ import java.util.logging.Logger;
 public class InstallService {
 
     private static final Logger LOGGER = LoggerUtil.getLogger(InstallService.class);
-    private final String basePath;
-    private Map<String, String> dbConn;
+    private final Map<String, String> dbConn;
     private Map<String, String> configMsg;
 
-    public InstallService(String basePath) {
-        this.basePath = basePath;
-    }
-
-    public InstallService(String basePath, Map<String, String> dbConn, Map<String, String> configMsg) {
-        this.basePath = basePath;
+    public InstallService(Map<String, String> dbConn, Map<String, String> configMsg) {
         this.dbConn = dbConn;
         this.configMsg = configMsg;
     }
 
-    public InstallService(String basePath, Map<String, String> dbConn) {
-        this.basePath = basePath;
+    public InstallService(Map<String, String> dbConn) {
         this.dbConn = dbConn;
     }
 
@@ -76,13 +69,13 @@ public class InstallService {
         map.put("language", InstallConstants.installConfig.getAcceptLanguage());
         map.put("rows", 10);
         map.put("template", InstallConstants.installConfig.defaultTemplatePath());
-        map.put("autoUpgradeVersion","ONE_WEEK");
-        map.put("zrlogSqlVersion",InstallConstants.installConfig.getZrLogSqlVersion());
+        map.put("autoUpgradeVersion", "ONE_WEEK");
+        map.put("zrlogSqlVersion", InstallConstants.installConfig.getZrLogSqlVersion());
         return map;
     }
 
-    static DataSourceWrapperImpl buildDataSource(Properties dbProperties,boolean dev) {
-        DataSourceWrapperImpl dataSource = new DataSourceWrapperImpl(dbProperties,dev);
+    static DataSourceWrapperImpl buildDataSource(Properties dbProperties, boolean dev) {
+        DataSourceWrapperImpl dataSource = new DataSourceWrapperImpl(dbProperties, dev);
         if (!dataSource.isWebApi()) {
             dataSource.setDriverClassName(dbProperties.getProperty("driverClass"));
             dataSource.setJdbcUrl(dbProperties.getProperty("jdbcUrl"));
@@ -252,7 +245,7 @@ public class InstallService {
         List<Object> params = new ArrayList<>();
         int i = 0;
         for (Map.Entry<String, Object> e : defaultMap.entrySet()) {
-            params.add(i+=1);
+            params.add(i += 1);
             params.add(e.getKey());
             params.add(e.getValue());
         }

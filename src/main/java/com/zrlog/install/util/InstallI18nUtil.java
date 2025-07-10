@@ -3,11 +3,9 @@ package com.zrlog.install.util;
 import com.hibegin.common.util.LoggerUtil;
 import com.zrlog.install.web.InstallConstants;
 
-import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Properties;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -58,14 +56,15 @@ public class InstallI18nUtil {
     }
 
     public static Map<String, Object> getInstallMap() {
-        return resMap.get(InstallConstants.installConfig.getAcceptLanguage());
+        Map<String, Object> stringObjectMap = resMap.get(InstallConstants.installConfig.getAcceptLanguage());
+        if (stringObjectMap == null) {
+            return new HashMap<>();
+        }
+        return new TreeMap<>(stringObjectMap);
     }
 
     public static String getInstallStringFromRes(String key) {
         Map<String, Object> i18nVO = getInstallMap();
-        if (Objects.isNull(i18nVO)) {
-            return "";
-        }
         Object obj = i18nVO.get(key);
         if (obj != null) {
             return obj.toString();

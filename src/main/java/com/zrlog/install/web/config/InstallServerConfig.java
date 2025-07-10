@@ -1,11 +1,11 @@
-package com.zrlog.install.config;
+package com.zrlog.install.web.config;
 
 import com.hibegin.http.server.config.AbstractServerConfig;
 import com.hibegin.http.server.config.RequestConfig;
 import com.hibegin.http.server.config.ResponseConfig;
 import com.hibegin.http.server.config.ServerConfig;
 import com.hibegin.http.server.web.MethodInterceptor;
-import com.zrlog.install.web.config.InstallRouters;
+import com.zrlog.install.web.InstallConstants;
 import com.zrlog.install.web.interceptor.BlogInstallInterceptor;
 
 public class InstallServerConfig extends AbstractServerConfig {
@@ -15,6 +15,9 @@ public class InstallServerConfig extends AbstractServerConfig {
     public InstallServerConfig() {
         serverConfig.addInterceptor(BlogInstallInterceptor.class);
         serverConfig.addInterceptor(MethodInterceptor.class);
+        serverConfig.addErrorHandle(400, InstallConstants.installConfig.getErrorHandler());
+        serverConfig.addErrorHandle(403, InstallConstants.installConfig.getErrorHandler());
+        serverConfig.addErrorHandle(500, InstallConstants.installConfig.getErrorHandler());
         InstallRouters.configRouter(serverConfig);
     }
 

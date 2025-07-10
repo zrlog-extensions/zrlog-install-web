@@ -2,7 +2,7 @@ package com.zrlog.install;
 
 import com.hibegin.http.server.WebServerBuilder;
 import com.hibegin.http.server.util.PathUtil;
-import com.zrlog.install.config.InstallServerConfig;
+import com.zrlog.install.web.config.InstallServerConfig;
 
 public class Application {
 

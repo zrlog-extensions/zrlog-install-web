@@ -1,12 +1,11 @@
 package com.zrlog.install.web.controller.api;
 
 import com.hibegin.http.annotation.ResponseBody;
-import com.hibegin.http.server.util.PathUtil;
 import com.hibegin.http.server.web.Controller;
+import com.zrlog.install.business.service.InstallResourceService;
 import com.zrlog.install.business.service.InstallService;
 import com.zrlog.install.business.type.TestConnectDbResult;
 import com.zrlog.install.exception.*;
-import com.zrlog.install.business.service.InstallResourceService;
 import com.zrlog.install.util.StringUtils;
 import com.zrlog.install.web.InstallConstants;
 
@@ -20,14 +19,12 @@ import java.util.Objects;
  */
 public class ApiInstallController extends Controller {
 
-    public static String JDBC_URL_BASE_QUERY_PARAM = "characterEncoding=UTF-8&allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=GMT";
-
     /**
      * 检查数据库是否可以正常连接使用，无法连接时给出相应的提示
      */
     @ResponseBody
-    public Map<String,Object> testDbConn() {
-        TestConnectDbResult testConnectDbResult = new InstallService(PathUtil.getConfPath(), getDbConn()).testDbConn();
+    public Map<String, Object> testDbConn() {
+        TestConnectDbResult testConnectDbResult = new InstallService(getDbConn()).testDbConn();
         if (testConnectDbResult.getError() != 0) {
             throw new InstallException(testConnectDbResult);
         }
@@ -53,11 +50,10 @@ public class ApiInstallController extends Controller {
         String dbType = getRequest().getParaToStr("dbType", "mysql");
         String jdbcUrl = "jdbc:" + dbType + "://" + getRequest().getParaToStr("dbHost") + ":" + getRequest().getParaToStr("dbPort") + "/" + getRequest().getParaToStr("dbName");
         if (Objects.equals(dbType, "mysql")) {
-            jdbcUrl += "?" + JDBC_URL_BASE_QUERY_PARAM;
+            jdbcUrl += "?" + InstallConstants.installConfig.getJdbcUrlQueryStr();
             dbConn.put("driverClass", "com.mysql.cj.jdbc.Driver");
         }
         dbConn.put("jdbcUrl", jdbcUrl);
-        System.out.println("dbConn = " + dbConn);
         return dbConn;
     }
 
@@ -65,14 +61,14 @@ public class ApiInstallController extends Controller {
      * 数据库检查通过后，根据填写信息，执行数据表，表数据的初始化
      */
     @ResponseBody
-    public Map<String,Object> startInstall() {
+    public Map<String, Object> startInstall() {
         Map<String, String> configMsg = new HashMap<>();
         configMsg.put("title", getRequest().getParaToStr("title", ""));
         configMsg.put("second_title", getRequest().getParaToStr("second_title", ""));
         configMsg.put("username", getRequest().getParaToStr("username", ""));
         configMsg.put("password", getRequest().getParaToStr("password", ""));
         configMsg.put("email", getRequest().getParaToStr("email", ""));
-        if (!new InstallService(PathUtil.getConfPath(), getDbConn(), configMsg).install()) {
+        if (!new InstallService(getDbConn(), configMsg).install()) {
             throw new InstallException(TestConnectDbResult.UNKNOWN);
         }
         InstallConstants.installConfig.getAction().installSuccess();
@@ -83,7 +79,7 @@ public class ApiInstallController extends Controller {
     @ResponseBody
     public Map<String, Object> installResource() {
         Map<String, Object> stringObjectMap = new InstallResourceService().installResourceInfo(getRequest());
-        stringObjectMap.put("data",stringObjectMap);
+        stringObjectMap.put("data", stringObjectMap);
         return stringObjectMap;
     }
 }

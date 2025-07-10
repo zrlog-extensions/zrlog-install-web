@@ -1,10 +1,10 @@
 package com.zrlog.install.web.config;
 
+import com.hibegin.http.server.api.HttpErrorHandle;
 import com.zrlog.install.business.response.LastVersionInfo;
 import com.zrlog.install.web.InstallAction;
 
 import java.io.File;
-import java.util.List;
 
 public interface InstallConfig {
 
@@ -24,5 +24,9 @@ public interface InstallConfig {
 
     LastVersionInfo getLastVersionInfo();
 
-    List<String> getResourceNameList();
+    String getBuildVersion();
+
+    String getJdbcUrlQueryStr();
+
+    HttpErrorHandle getErrorHandler();
 }

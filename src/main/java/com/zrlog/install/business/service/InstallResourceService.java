@@ -10,25 +10,25 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TreeMap;
 
 public class InstallResourceService {
 
     public Map<String, Object> installResourceInfo(HttpRequest request) {
         String lang = InstallConstants.installConfig.getAcceptLanguage();
-        Map<String, Object> installMap = InstallI18nUtil.getInstallMap();
+        Map<String, Object> installMap = new TreeMap<>(InstallI18nUtil.getInstallMap());
         if (InstallConstants.installConfig.getAction().isInstalled()) {
             Map<String, Object> stringObjectMap = new HashMap<>();
             stringObjectMap.put("installed", true);
-            stringObjectMap.put("installedTips", installMap.get("installedTips"));
             stringObjectMap.put("installedTitle", installMap.get("installedTitle"));
             if (InstallConstants.installConfig.isWarMode()) {
-                installMap.put("installedTips", installMap.get("installedWarTips"));
+                stringObjectMap.put("installedTips", installMap.get("installedWarTips"));
             } else {
-                installMap.put("installedTips", installMap.get("installedTips"));
+                stringObjectMap.put("installedTips", installMap.get("installedTips"));
             }
             return stringObjectMap;
         }
-        //installMap.put("currentVersion", BlogBuildInfoUtil.getVersion());
+        installMap.put("currentVersion", InstallConstants.installConfig.getBuildVersion());
         //encoding ok, remove utfTips
         if (Charset.defaultCharset().displayName().toLowerCase().contains("utf")) {
             installMap.put("utfTips", "");
@@ -37,7 +37,6 @@ public class InstallResourceService {
         //这个是不需要的
         installMap.remove("installedWarTips");
         installMap.remove("installedTips");
-        //UpdateVersionInfoPlugin updateVersionInfoPlugin = new UpdateVersionInfoPlugin();
         try (InputStream inputStream = InstallResourceService.class.getResourceAsStream("/i18n/disclaimer-agreement/" + lang + ".md")) {
             if (Objects.nonNull(inputStream)) {
                 installMap.put("disclaimerAgreement", MarkdownUtil.renderMd(new String(inputStream.readAllBytes())));
@@ -47,8 +46,6 @@ public class InstallResourceService {
             installMap.put("lastVersionInfo", InstallConstants.installConfig.getLastVersionInfo());
         } catch (Exception e) {
             //ignore
-        } finally {
-            //updateVersionInfoPlugin.stop();
         }
         return installMap;
     }
