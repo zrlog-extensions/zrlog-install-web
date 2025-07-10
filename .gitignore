@@ -6,3 +6,4 @@ sim.pid
 conf/install.lock
 conf/db.properties
 log
+pom.xml.versionsBackup
