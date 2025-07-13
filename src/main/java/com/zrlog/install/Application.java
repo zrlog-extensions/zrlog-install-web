@@ -21,7 +21,7 @@ public class Application {
             File configFile = new File(args[0]);
             if (configFile.exists()) {
                 InstallConfigVO config = new Gson().fromJson(new FileReader(configFile), InstallConfigVO.class);
-                InstallService installService = new InstallService(InstallConstants.installConfig, config.getDbConfig(), config.getConfigMsg());
+                InstallService installService = new InstallService(InstallConstants.installConfig, config);
                 boolean install = installService.install();
                 System.out.println("installed = " + install);
                 return;

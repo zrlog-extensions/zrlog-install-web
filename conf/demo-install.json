@@ -8,8 +8,16 @@
     "title": "ZrLog demo site",
     "username": "admin",
     "password": "123456",
-    "second_title": "Work with serverless (FaaS)",
+    "second_title": "Work on AWS Lambda with Cloudflare D1 database"
+  },
+  "appendWebsite": {
     "host": "demo.zrlog.com",
-    "backendUrl": "https://faas-demo.zrlog.com"
+    "backendUrl": "https://faas-demo.zrlog.com",
+    "static-plus_git": "{\"url\":\"https://github.com/94fzb/zrlog-demo-pages\",\"branch\":\"master\",\"username\":\"94fzb\",\"password\":\"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\",\"accessBaseUrl\":\"https://demo.zrlog.com\"}",
+    "static-plus_syncRemoteType": "git",
+    "static-plus_syncTemplate": "on",
+    "static-plus_syncHtml": "on",
+    "generator_html_status": "1.0",
+    "upgradePreview": "1.0"
   }
 }
