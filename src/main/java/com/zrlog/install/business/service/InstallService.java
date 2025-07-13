@@ -76,6 +76,10 @@ public class InstallService {
         map.put("template", installConfig.defaultTemplatePath());
         map.put("autoUpgradeVersion", 86400);
         map.put("zrlogSqlVersion", installConfig.getZrLogSqlVersion());
+        String host = webSite.get("host");
+        if (StringUtils.isNotEmpty(host)) {
+            map.put("host", host);
+        }
         return map;
     }
 
@@ -244,15 +248,14 @@ public class InstallService {
 
     private boolean initWebSite(DAO dao) throws SQLException {
         StringBuilder sb = new StringBuilder();
-        sb.append("INSERT INTO `website` (`siteId`,`name`, `value`, `remark`) VALUES ");
+        sb.append("INSERT INTO `website` (`name`, `value`, `remark`) VALUES ");
         Map<String, Object> defaultMap = getDefaultWebSiteSettingMap(configMsg);
         for (int i = 0; i < defaultMap.size(); i++) {
-            sb.append("(").append("?").append(",").append("?").append(",").append("?").append(",NULL),");
+            sb.append("(").append("?").append(",").append("?").append(",NULL),");
         }
         List<Object> params = new ArrayList<>();
         int i = 0;
         for (Map.Entry<String, Object> e : defaultMap.entrySet()) {
-            params.add(i += 1);
             params.add(e.getKey());
             params.add(e.getValue());
         }

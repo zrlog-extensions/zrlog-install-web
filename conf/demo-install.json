@@ -1,0 +1,15 @@
+{
+  "dbConfig": {
+    "user": "zrlog_test",
+    "password": "123456",
+    "jdbcUrl": "jdbc:webapi://faas-demo-db.zrlog.com:443/zrlog_test?supportHttp2=true"
+  },
+  "configMsg": {
+    "title": "ZrLog demo site",
+    "username": "admin",
+    "password": "123456",
+    "second_title": "Work with serverless (FaaS)",
+    "host": "demo.zrlog.com",
+    "backendUrl": "https://faas-demo.zrlog.com"
+  }
+}
