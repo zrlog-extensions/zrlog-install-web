@@ -154,6 +154,9 @@ public class SqlConvertUtils {
                     .replace("DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci", "")
                     .replaceAll("\\s+DEFAULT\\s+CHARSET=utf8", "")
                     .replaceAll("AUTO_INCREMENT=\\w+", "")
+                    .replaceAll("COLLATE=utf8mb4_unicode_ci", "")
+                    .replaceAll("CONSTRAINT `?(\\w+)`?\\s*,", "")
+                    .replaceAll("CONSTRAINT `?(\\w+)`", "")
                     .replaceAll(",\\s+\\)", ")");
 
             if (cleanText.startsWith("INSERT INTO")) {
