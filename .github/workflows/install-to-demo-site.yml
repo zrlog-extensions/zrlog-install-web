@@ -6,7 +6,7 @@ on:
   workflow_dispatch:      # 可手动触发（推荐保留）
 
 jobs:
-  release:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
