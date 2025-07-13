@@ -5,10 +5,10 @@
     "jdbcUrl": "jdbc:webapi://faas-demo-db.zrlog.com:443/zrlog_test?supportHttp2=true"
   },
   "configMsg": {
-    "title": "ZrLog demo site",
+    "title": "ZrLog 演示站点",
     "username": "admin",
     "password": "123456",
-    "second_title": "Work on AWS Lambda with Cloudflare D1 database"
+    "second_title": "基于无服务器架构，使用 Cloudflare D1 存储数据"
   },
   "appendWebsite": {
     "host": "demo.zrlog.com",
