@@ -8,6 +8,7 @@ import com.zrlog.install.business.response.TestConnectResponse;
 import com.zrlog.install.business.service.InstallResourceService;
 import com.zrlog.install.business.service.InstallService;
 import com.zrlog.install.business.type.TestConnectDbResult;
+import com.zrlog.install.business.vo.InstallConfigVO;
 import com.zrlog.install.exception.*;
 import com.zrlog.install.util.StringUtils;
 import com.zrlog.install.web.InstallConstants;
@@ -34,7 +35,9 @@ public class ApiInstallController extends Controller {
      */
     @ResponseBody
     public TestConnectResponse testDbConn() {
-        TestConnectDbResult testConnectDbResult = new InstallService(installConfig, getDbConn()).testDbConn();
+        InstallConfigVO configVO = new InstallConfigVO();
+        configVO.setDbConfig(getDbConn());
+        TestConnectDbResult testConnectDbResult = new InstallService(installConfig, configVO).testDbConn();
         if (testConnectDbResult.getError() != 0) {
             throw new InstallException(testConnectDbResult);
         }
@@ -78,7 +81,10 @@ public class ApiInstallController extends Controller {
         configMsg.put("username", getRequest().getParaToStr("username", ""));
         configMsg.put("password", getRequest().getParaToStr("password", ""));
         configMsg.put("email", getRequest().getParaToStr("email", ""));
-        if (!new InstallService(installConfig, getDbConn(), configMsg).install()) {
+        InstallConfigVO configVO = new InstallConfigVO();
+        configVO.setConfigMsg(configMsg);
+        configVO.setDbConfig(getDbConn());
+        if (!new InstallService(installConfig, configVO).install()) {
             throw new InstallException(TestConnectDbResult.UNKNOWN);
         }
         return new InstallResultResponse();

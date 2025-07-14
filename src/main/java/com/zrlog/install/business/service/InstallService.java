@@ -7,6 +7,7 @@ import com.hibegin.common.util.IOUtil;
 import com.hibegin.common.util.LoggerUtil;
 import com.hibegin.template.BasicTemplateRender;
 import com.zrlog.install.business.type.TestConnectDbResult;
+import com.zrlog.install.business.vo.InstallConfigVO;
 import com.zrlog.install.util.InstallI18nUtil;
 import com.zrlog.install.util.MarkdownUtil;
 import com.zrlog.install.util.SqlConvertUtils;
@@ -34,18 +35,16 @@ public class InstallService {
     private static final Logger LOGGER = LoggerUtil.getLogger(InstallService.class);
     private final Map<String, String> dbConn;
     private final Map<String, String> configMsg;
+    private final Map<String, String> appendWebsite;
     private final InstallAction installAction;
     private final InstallConfig installConfig;
 
-    public InstallService(InstallConfig installConfig, Map<String, String> dbConn, Map<String, String> configMsg) {
-        this.dbConn = dbConn;
-        this.configMsg = configMsg;
+    public InstallService(InstallConfig installConfig, InstallConfigVO installConfigVO) {
+        this.dbConn = installConfigVO.getDbConfig();
+        this.configMsg = installConfigVO.getConfigMsg();
+        this.appendWebsite = installConfigVO.getAppendWebsite();
         this.installAction = installConfig.getAction();
         this.installConfig = installConfig;
-    }
-
-    public InstallService(InstallConfig installConfig, Map<String, String> dbConn) {
-        this(installConfig, dbConn, null);
     }
 
     /**
@@ -76,6 +75,9 @@ public class InstallService {
         map.put("template", installConfig.defaultTemplatePath());
         map.put("autoUpgradeVersion", 86400);
         map.put("zrlogSqlVersion", installConfig.getZrLogSqlVersion());
+        if (Objects.nonNull(appendWebsite)) {
+            map.putAll(appendWebsite);
+        }
         return map;
     }
 
@@ -244,15 +246,14 @@ public class InstallService {
 
     private boolean initWebSite(DAO dao) throws SQLException {
         StringBuilder sb = new StringBuilder();
-        sb.append("INSERT INTO `website` (`siteId`,`name`, `value`, `remark`) VALUES ");
+        sb.append("INSERT INTO `website` (`name`, `value`, `remark`) VALUES ");
         Map<String, Object> defaultMap = getDefaultWebSiteSettingMap(configMsg);
         for (int i = 0; i < defaultMap.size(); i++) {
-            sb.append("(").append("?").append(",").append("?").append(",").append("?").append(",NULL),");
+            sb.append("(").append("?").append(",").append("?").append(",NULL),");
         }
         List<Object> params = new ArrayList<>();
         int i = 0;
         for (Map.Entry<String, Object> e : defaultMap.entrySet()) {
-            params.add(i += 1);
             params.add(e.getKey());
             params.add(e.getValue());
         }

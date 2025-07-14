@@ -7,3 +7,5 @@ conf/install.lock
 conf/db.properties
 log
 pom.xml.versionsBackup
+conf/*.sql
+conf/sqlite-db.properties

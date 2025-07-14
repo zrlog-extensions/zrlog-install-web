@@ -1,0 +1,23 @@
+{
+  "dbConfig": {
+    "user": "zrlog_test",
+    "password": "123456",
+    "jdbcUrl": "jdbc:webapi://faas-demo-db.zrlog.com:443/zrlog_test?supportHttp2=true"
+  },
+  "configMsg": {
+    "title": "ZrLog 演示站点",
+    "username": "admin",
+    "password": "123456",
+    "second_title": "基于无服务器架构，使用 Cloudflare D1 存储数据"
+  },
+  "appendWebsite": {
+    "host": "demo.zrlog.com",
+    "backendUrl": "https://faas-demo.zrlog.com",
+    "static-plus_git": "{\"url\":\"https://github.com/94fzb/zrlog-demo-pages\",\"branch\":\"master\",\"username\":\"94fzb\",\"password\":\"${github_pat}\",\"accessBaseUrl\":\"https://demo.zrlog.com\"}",
+    "static-plus_syncRemoteType": "git",
+    "static-plus_syncTemplate": "on",
+    "static-plus_syncHtml": "on",
+    "generator_html_status": "1.0",
+    "upgradePreview": "1.0"
+  }
+}
