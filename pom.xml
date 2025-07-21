@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.hibegin</groupId>
     <artifactId>zrlog-install-web</artifactId>
-    <version>3.2.3-SNAPSHOT</version>
+    <version>3.2.3</version>
 
     <name>ZrLog install web</name>
 
@@ -47,12 +47,12 @@
         <dependency>
             <groupId>com.hibegin</groupId>
             <artifactId>common-dao</artifactId>
-            <version>1.0.5</version>
+            <version>1.0.13</version>
         </dependency>
         <dependency>
             <groupId>com.hibegin</groupId>
             <artifactId>simplewebserver</artifactId>
-            <version>4.0.76</version>
+            <version>4.0.85</version>
         </dependency>
         <dependency>
             <groupId>org.jsoup</groupId>

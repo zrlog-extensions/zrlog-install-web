@@ -1,6 +1,7 @@
 package com.zrlog.install.util;
 
 import com.google.gson.Gson;
+import com.hibegin.http.server.util.NativeImageUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,6 +31,7 @@ public class InstallNativeImageResourceUtils {
             throw new RuntimeException(e);
         }
         resourceNameList.add("/init-table-structure.sql");
+        NativeImageUtils.doResourceLoadByResourceNames(resourceNameList);
         return resourceNameList;
     }
 
