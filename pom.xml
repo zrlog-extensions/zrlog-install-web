@@ -12,13 +12,13 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>11</java.version>
-        <finalName>install-web</finalName>
+        <finalName>zrlog-install-web</finalName>
         <libOutputPath>lib</libOutputPath>
         <gpg.passphrase/>
     </properties>
 
-    <url>https://github.com/zrlog-extensions/install-web</url>
-    <description>ZrLog install service</description>
+    <url>https://github.com/zrlog-extensions/zrlog-install-web</url>
+    <description>ZrLog install web</description>
 
     <licenses>
         <license>
@@ -34,13 +34,13 @@
         </developer>
     </developers>
     <scm>
-        <connection>scm:git:https://github.com/zrlog-extensions/install-web</connection>
-        <developerConnection>scm:git:https://github.com/zrlog-extensions/install-web</developerConnection>
-        <url>https://github.com/zrlog-extensions/install-web</url>
+        <connection>scm:git:https://github.com/zrlog-extensions/zrlog-install-web</connection>
+        <developerConnection>scm:git:https://github.com/zrlog-extensions/zrlog-install-web</developerConnection>
+        <url>https://github.com/zrlog-extensions/zrlog-install-web</url>
     </scm>
     <issueManagement>
         <system>Github Issue</system>
-        <url>https://github.com/zrlog-extensions/install-web</url>
+        <url>https://github.com/zrlog-extensions/zrlog-install-web</url>
     </issueManagement>
 
     <dependencies>

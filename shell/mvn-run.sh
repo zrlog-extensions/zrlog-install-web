@@ -1,2 +1,3 @@
 ./mvnw -Pjar clean package -U
-java -jar install-web-starter.jar
+export TZ="Asia/Shanghai"
+java -jar zrlog-install-web-starter.jar
