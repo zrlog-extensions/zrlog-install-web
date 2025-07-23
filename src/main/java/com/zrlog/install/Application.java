@@ -28,6 +28,7 @@ public class Application {
                 InstallService installService = new InstallService(InstallConstants.installConfig, config);
                 boolean install = installService.install();
                 System.out.println("installed = " + install);
+                System.exit(install ? 0 : 1);
                 return;
             }
         }
