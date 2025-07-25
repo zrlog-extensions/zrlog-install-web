@@ -23,4 +23,4 @@ jobs:
 
 
     - name: demo site install by quick shell
-      run: sh shell/quick-demo-site-install.sh
+      run: sh shell/quick-demo-site-install.sh ${{secrets.PAT}}

@@ -1,6 +1,7 @@
 package com.zrlog.install.business.service;
 
 import com.hibegin.http.server.api.HttpRequest;
+import com.zrlog.install.business.response.LastVersionInfo;
 import com.zrlog.install.util.InstallI18nUtil;
 import com.zrlog.install.util.MarkdownUtil;
 import com.zrlog.install.web.InstallConstants;
@@ -43,7 +44,14 @@ public class InstallResourceService {
             } else {
                 installMap.put("disclaimerAgreement", "");
             }
-            installMap.put("lastVersionInfo", InstallConstants.installConfig.getLastVersionInfo());
+            LastVersionInfo lastVersionInfo = InstallConstants.installConfig.getLastVersionInfo();
+            if (Objects.nonNull(lastVersionInfo) && Objects.equals(lastVersionInfo.getLatestVersion(), false)) {
+                installMap.put("upgradeTips", MarkdownUtil.renderMd(installMap.get("newVersion") + " v" + lastVersionInfo.getNewVersion()));
+                installMap.put("upgradeChangeLog", lastVersionInfo.getChangeLog());
+                installMap.put("upgradeDownloadUrl", lastVersionInfo.getDownloadUrl());
+            } else {
+                installMap.put("upgradeTips", "");
+            }
         } catch (Exception e) {
             //ignore
         }

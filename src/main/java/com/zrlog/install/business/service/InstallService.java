@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.sql.SQLException;
 import java.sql.SQLRecoverableException;
 import java.sql.SQLSyntaxErrorException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -208,8 +209,16 @@ public class InstallService {
             params.add(getPlainSearchText(content));
             params.add(markdown);
             params.add(content);
-            params.add(new Date());
-            params.add(new Date());
+            String installDate = configMsg.get("installDate");
+            if (StringUtils.isEmpty(installDate)) {
+                params.add(new Date());
+                params.add(new Date());
+            } else {
+                Date parsedDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z").parse(installDate);
+                params.add(parsedDate);
+                params.add(parsedDate);
+            }
+
             params.add(false);
             params.add(false);
         }

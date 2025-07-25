@@ -5,20 +5,20 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.hibegin</groupId>
     <artifactId>zrlog-install-web</artifactId>
-    <version>3.2.3-SNAPSHOT</version>
+    <version>3.2.9-SNAPSHOT</version>
 
     <name>ZrLog install web</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>11</java.version>
-        <finalName>install-web</finalName>
+        <finalName>zrlog-install-web</finalName>
         <libOutputPath>lib</libOutputPath>
         <gpg.passphrase/>
     </properties>
 
-    <url>https://github.com/zrlog-extensions/install-web</url>
-    <description>ZrLog install service</description>
+    <url>https://github.com/zrlog-extensions/zrlog-install-web</url>
+    <description>ZrLog install web</description>
 
     <licenses>
         <license>
@@ -29,30 +29,30 @@
 
     <developers>
         <developer>
-            <email>90xchun@gmail.com</email>
-            <url>https://xiaochun.zrlog.com</url>
+            <email>support@zrlog.com</email>
+            <url>https://blog.zrlog.com</url>
         </developer>
     </developers>
     <scm>
-        <connection>scm:git:https://github.com/zrlog-extensions/install-web</connection>
-        <developerConnection>scm:git:https://github.com/zrlog-extensions/install-web</developerConnection>
-        <url>https://github.com/zrlog-extensions/install-web</url>
+        <connection>scm:git:https://github.com/zrlog-extensions/zrlog-install-web</connection>
+        <developerConnection>scm:git:https://github.com/zrlog-extensions/zrlog-install-web</developerConnection>
+        <url>https://github.com/zrlog-extensions/zrlog-install-web</url>
     </scm>
     <issueManagement>
         <system>Github Issue</system>
-        <url>https://github.com/zrlog-extensions/install-web</url>
+        <url>https://github.com/zrlog-extensions/zrlog-install-web</url>
     </issueManagement>
 
     <dependencies>
         <dependency>
             <groupId>com.hibegin</groupId>
             <artifactId>common-dao</artifactId>
-            <version>1.0.5</version>
+            <version>1.0.13</version>
         </dependency>
         <dependency>
             <groupId>com.hibegin</groupId>
             <artifactId>simplewebserver</artifactId>
-            <version>4.0.76</version>
+            <version>4.0.85</version>
         </dependency>
         <dependency>
             <groupId>org.jsoup</groupId>
