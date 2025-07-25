@@ -39,6 +39,7 @@ public class InstallService {
     private final Map<String, String> appendWebsite;
     private final InstallAction installAction;
     private final InstallConfig installConfig;
+    private final String contextPath;
 
     public InstallService(InstallConfig installConfig, InstallConfigVO installConfigVO) {
         this.dbConn = installConfigVO.getDbConfig();
@@ -46,6 +47,7 @@ public class InstallService {
         this.appendWebsite = installConfigVO.getAppendWebsite();
         this.installAction = installConfig.getAction();
         this.installConfig = installConfig;
+        this.contextPath = Objects.requireNonNullElse(installConfigVO.getContextPath(), "");
     }
 
     /**
@@ -198,7 +200,7 @@ public class InstallService {
         List<Object> params = new ArrayList<>();
         try (InputStream in = InstallService.class.getResourceAsStream("/i18n/init-blog/" + installConfig.getAcceptLanguage() + ".md")) {
             Map<String, Object> data = new HashMap<>();
-            data.put("editUrl", "/admin/article-edit?id=" + logId);
+            data.put("editUrl", contextPath + "/admin/article-edit?id=" + logId);
             String markdown = new BasicTemplateRender(data, InstallService.class).render(in);
             String content = MarkdownUtil.renderMd(markdown);
             params.add(true);
@@ -255,13 +257,12 @@ public class InstallService {
 
     private boolean initWebSite(DAO dao) throws SQLException {
         StringBuilder sb = new StringBuilder();
-        sb.append("INSERT INTO `website` (`name`, `value`, `remark`) VALUES ");
+        sb.append("INSERT INTO `website` (`name`, `value`) VALUES ");
         Map<String, Object> defaultMap = getDefaultWebSiteSettingMap(configMsg);
         for (int i = 0; i < defaultMap.size(); i++) {
-            sb.append("(").append("?").append(",").append("?").append(",NULL),");
+            sb.append("(").append("?").append(",").append("?").append("),");
         }
         List<Object> params = new ArrayList<>();
-        int i = 0;
         for (Map.Entry<String, Object> e : defaultMap.entrySet()) {
             params.add(e.getKey());
             params.add(e.getValue());

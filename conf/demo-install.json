@@ -20,5 +20,6 @@
     "static-plus_syncHtml": "on",
     "generator_html_status": "1.0",
     "upgradePreview": "1.0"
-  }
+  },
+  "contextPath": ""
 }

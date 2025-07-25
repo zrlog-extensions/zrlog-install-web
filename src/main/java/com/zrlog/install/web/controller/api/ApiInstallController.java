@@ -37,6 +37,7 @@ public class ApiInstallController extends Controller {
     public TestConnectResponse testDbConn() {
         InstallConfigVO configVO = new InstallConfigVO();
         configVO.setDbConfig(getDbConn());
+        configVO.setContextPath(request.getContextPath());
         TestConnectDbResult testConnectDbResult = new InstallService(installConfig, configVO).testDbConn();
         if (testConnectDbResult.getError() != 0) {
             throw new InstallException(testConnectDbResult);
@@ -84,6 +85,7 @@ public class ApiInstallController extends Controller {
         InstallConfigVO configVO = new InstallConfigVO();
         configVO.setConfigMsg(configMsg);
         configVO.setDbConfig(getDbConn());
+        configVO.setContextPath(request.getContextPath());
         if (!new InstallService(installConfig, configVO).install()) {
             throw new InstallException(TestConnectDbResult.UNKNOWN);
         }

@@ -9,5 +9,6 @@
     "username": "admin",
     "password": "123456",
     "second_title": "Work with serverless (FaaS)"
-  }
+  },
+  "contextPath": ""
 }

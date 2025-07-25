@@ -7,6 +7,7 @@ public class InstallConfigVO {
     private Map<String,String> dbConfig;
     private Map<String,String> configMsg;
     private Map<String,String> appendWebsite;
+    private String contextPath;
 
     public Map<String, String> getDbConfig() {
         return dbConfig;
@@ -30,5 +31,13 @@ public class InstallConfigVO {
 
     public void setAppendWebsite(Map<String, String> appendWebsite) {
         this.appendWebsite = appendWebsite;
+    }
+
+    public String getContextPath() {
+        return contextPath;
+    }
+
+    public void setContextPath(String contextPath) {
+        this.contextPath = contextPath;
     }
 }
