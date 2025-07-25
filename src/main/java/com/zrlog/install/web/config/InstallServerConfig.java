@@ -19,6 +19,7 @@ public class InstallServerConfig extends AbstractServerConfig {
         serverConfig.addErrorHandle(400, InstallConstants.installConfig.getErrorHandler());
         serverConfig.addErrorHandle(403, InstallConstants.installConfig.getErrorHandler());
         serverConfig.addErrorHandle(500, InstallConstants.installConfig.getErrorHandler());
+        serverConfig.setPort(6080);
         InstallRouters.configRouter(serverConfig);
     }
 

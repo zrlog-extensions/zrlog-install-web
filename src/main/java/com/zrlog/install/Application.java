@@ -16,6 +16,7 @@ import java.io.FileNotFoundException;
 public class Application {
 
     public static void main(String[] args) throws FileNotFoundException {
+        System.getProperties().put("java.util.logging.SimpleFormatter.format", "%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS %4$s %5$s%6$s%n");
         PathUtil.setRootPath(System.getProperty("user.dir"));
         if (args.length >= 1) {
             File configFile = new File(args[0]);

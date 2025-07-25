@@ -189,11 +189,17 @@ const IndexLayout = () => {
             height: "100vh", paddingRight: 12,
             paddingLeft: 12, display: "flex", alignItems: "center"
         }}>
-            <Card title={state.installed ? "" : getRes().installWizard} className='container' style={{
+            <Card title={getRes().installWizard} style={{
                 marginTop: 32, marginBottom: 32, width: "100%",
                 maxWidth: "960px"
             }}>
-                {/*utf tips for some window env*/}
+                <div hidden={getRes()['upgradeTips'] === ''}>
+                    <Alert type='info'
+                           message={<div
+                               dangerouslySetInnerHTML={{__html: getRes()['upgradeTips']}}/>}
+                           showIcon/>
+                    <Divider/>
+                </div>
                 <div hidden={getRes()['utfTips'] === ''}>
                     <Alert type='error'
                            message={<div
@@ -206,7 +212,7 @@ const IndexLayout = () => {
                         <Step key={item.title + ""} title={item.title + ""}/>
                     ))}
                 </Steps>
-                <div className="steps-content" style={{marginTop: '20px'}}>
+                <div  style={{marginTop: '20px'}}>
                     {state.current === 0 && <DisclaimerAgreement/>}
                     {state.current === 1 && (
                         <Form ref={formDataBaseInfoRef} initialValues={state.dataBaseInfo} {...formItemLayout}
@@ -286,7 +292,7 @@ const IndexLayout = () => {
                         </div>
                     )}
                 </div>
-                <div className="steps-action" style={{paddingTop: '20px'}}>
+                <div style={{paddingTop: '20px'}}>
                     {state.current === 0 && (
                         <Button type="primary" onClick={() => next()}>
                             {getRes().installAgreementNext}
