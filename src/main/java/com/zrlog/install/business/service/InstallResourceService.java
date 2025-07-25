@@ -46,7 +46,9 @@ public class InstallResourceService {
             }
             LastVersionInfo lastVersionInfo = InstallConstants.installConfig.getLastVersionInfo();
             if (Objects.nonNull(lastVersionInfo) && Objects.equals(lastVersionInfo.getLatestVersion(), false)) {
-                installMap.put("upgradeTips", MarkdownUtil.renderMd(installMap.get("newVersion") + " [v" + lastVersionInfo.getNewVersion() + "](" + lastVersionInfo.getDownloadUrl() + ")"));
+                installMap.put("upgradeTips", MarkdownUtil.renderMd(installMap.get("newVersion") + " v" + lastVersionInfo.getNewVersion()));
+                installMap.put("upgradeChangeLog", lastVersionInfo.getChangeLog());
+                installMap.put("upgradeDownloadUrl", lastVersionInfo.getDownloadUrl());
             } else {
                 installMap.put("upgradeTips", "");
             }

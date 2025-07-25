@@ -11,6 +11,7 @@ import {
     Layout,
     Result,
     Select,
+    Space,
     Steps,
     Typography
 } from 'antd';
@@ -62,6 +63,8 @@ const IndexLayout = () => {
         }
         return 0;
     }
+
+    const {modal} = App.useApp()
 
     const [state, setState] = useState<AppState>({
         current: 0,
@@ -195,6 +198,20 @@ const IndexLayout = () => {
             }}>
                 <div hidden={getRes()['upgradeTips'] === ''}>
                     <Alert type='info'
+                           action={
+                               <Space.Compact>
+                                   <Button size={"middle"} type="default" onClick={() => {
+                                       modal.info({
+                                           content: getRes()['upgradeChangeLog'],
+                                       })
+                                   }}>
+                                       {getRes()['detail']}
+                                   </Button>
+                                   <Button size={"middle"} type="primary" href={getRes()['upgradeDownloadUrl']}>
+                                       {getRes()['download']}
+                                   </Button>
+                               </Space.Compact>
+                           }
                            message={<div
                                dangerouslySetInnerHTML={{__html: getRes()['upgradeTips']}}/>}
                            showIcon/>
@@ -212,7 +229,7 @@ const IndexLayout = () => {
                         <Step key={item.title + ""} title={item.title + ""}/>
                     ))}
                 </Steps>
-                <div  style={{marginTop: '20px'}}>
+                <div style={{marginTop: '20px'}}>
                     {state.current === 0 && <DisclaimerAgreement/>}
                     {state.current === 1 && (
                         <Form ref={formDataBaseInfoRef} initialValues={state.dataBaseInfo} {...formItemLayout}

@@ -1,9 +1,9 @@
 {
   "files": {
-    "main.js": "./install/static/js/main.d00ff830.js",
+    "main.js": "./install/static/js/main.009fcba2.js",
     "index.html": "./install/index.html"
   },
   "entrypoints": [
-    "static/js/main.d00ff830.js"
+    "static/js/main.009fcba2.js"
   ]
 }
