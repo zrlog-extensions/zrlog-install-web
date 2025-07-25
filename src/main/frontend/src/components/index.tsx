@@ -202,6 +202,7 @@ const IndexLayout = () => {
                                <Space.Compact>
                                    <Button size={"middle"} type="default" onClick={() => {
                                        modal.info({
+                                           title:getRes()['newVersion'],
                                            content: <div
                                                dangerouslySetInnerHTML={{__html: getRes()['upgradeChangeLog']}}></div>,
                                        })
