@@ -2,11 +2,15 @@ package com.zrlog.install.web.controller.page;
 
 import com.google.gson.Gson;
 import com.hibegin.common.util.IOUtil;
+import com.hibegin.http.server.api.HttpRequest;
 import com.hibegin.http.server.web.Controller;
 import com.zrlog.install.business.service.InstallResourceService;
+import com.zrlog.install.util.StringUtils;
 import com.zrlog.install.web.InstallConstants;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.io.InputStream;
 import java.util.Map;
@@ -17,6 +21,11 @@ import java.util.Objects;
  * 注意 install.lock 文件相当重要，如果不是重新安装请不要删除这个自动生成的文件
  */
 public class InstallController extends Controller {
+
+    private void fillToRealLink(HttpRequest request, Element link) {
+        String newUrl = link.attr("href").replaceFirst("/", request.getContextPath() + "/");
+        link.attr("href", newUrl);
+    }
 
     /**
      * 加载安装向导第一个页面数据
@@ -38,6 +47,10 @@ public class InstallController extends Controller {
             document.title(String.valueOf(stringObjectMap.get("installedTitle")));
         } else {
             document.title(String.valueOf(stringObjectMap.get("installWizard")));
+        }
+        Elements favicon = document.head().select("link[rel=shortcut icon]");
+        if (!favicon.isEmpty()) {
+            favicon.forEach(link -> fillToRealLink(request, link));
         }
         String html = document.html();
         response.renderHtmlStr(html);
