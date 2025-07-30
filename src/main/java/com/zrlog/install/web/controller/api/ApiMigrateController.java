@@ -20,6 +20,11 @@ import java.util.StringJoiner;
 public class ApiMigrateController extends Controller {
 
     public void convertToSqliteSqlFile() throws FileNotFoundException {
+        doConvert();
+        response.renderJson(new HashMap<>());
+    }
+
+    private void doConvert() throws FileNotFoundException {
         if (InstallConstants.installConfig.getAction().isInstalled()) {
             response.renderCode(403);
             return;
@@ -33,12 +38,11 @@ public class ApiMigrateController extends Controller {
         StringJoiner stringJoiner = new StringJoiner(";\n");
         strings.forEach(stringJoiner::add);
         IOUtil.writeStrToFile(stringJoiner.toString(), PathUtil.getConfFile("sqlite.sql"));
-        response.renderJson(new HashMap<>());
     }
 
 
     public void doImportSqlite() throws Exception {
-        convertToSqliteSqlFile();
+        doConvert();
         String sqlPath = getRequest().getParaToStr("sqlPath", "sqlite.sql");
         File sqlFile = PathUtil.getConfFile(sqlPath);
         Properties properties = new Properties();
