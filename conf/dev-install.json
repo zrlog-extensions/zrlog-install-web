@@ -8,7 +8,11 @@
     "title": "ZrLog dev site",
     "username": "admin",
     "password": "123456",
+    "secretKey": "43817227-ed2f-43bc-8f4f-cc883ea48ee6",
     "second_title": "Work with serverless (FaaS)"
+  },
+  "appendWebsite": {
+    "system_notification": "默认数据库，仅用于预览，请使用自有数据库（删掉 conf/install.lock文件，完成安装流程）"
   },
   "contextPath": ""
 }

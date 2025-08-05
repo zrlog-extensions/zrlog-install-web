@@ -252,7 +252,7 @@ public class InstallService {
 
     private boolean initUser(Map<String, String> blogMsg, DAO dao) throws SQLException {
         String insertUserSql = "INSERT INTO `user`( `userId`,`userName`, `password`, `email`,`secretKey`) VALUES (1,?,?,?,?)";
-        return dao.execute(insertUserSql, blogMsg.get("username"), installConfig.encryptPassword(blogMsg.get("password")), configMsg.get("email"), UUID.randomUUID().toString());
+        return dao.execute(insertUserSql, blogMsg.get("username"), installConfig.encryptPassword(blogMsg.get("password")), configMsg.get("email"), configMsg.getOrDefault("secretKey", UUID.randomUUID().toString()));
     }
 
     private boolean initWebSite(DAO dao) throws SQLException {
