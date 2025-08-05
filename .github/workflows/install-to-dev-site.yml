@@ -1,4 +1,4 @@
-name: Demo site database init
+name: dev site database init
 
 on:
 #  schedule:
@@ -22,5 +22,5 @@ jobs:
         server-id: central
 
 
-    - name: demo site install by quick shell
+    - name: dev site install by quick shell
       run: sh shell/quick-dev-site-install.sh
