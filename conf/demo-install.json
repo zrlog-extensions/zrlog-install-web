@@ -22,6 +22,7 @@
     "generator_html_status": "1.0",
     "upgradePreview": "1.0",
     "webCm": "<plugin name=\"statistics\" view=\"widget\"/>",
+    "statistics_host": "faas-demo.zrlog.com",
     "system_notification": "测试通知"
   },
   "contextPath": ""
