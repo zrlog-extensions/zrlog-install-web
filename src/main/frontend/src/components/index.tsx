@@ -11,7 +11,6 @@ import {
     Layout,
     Result,
     Select,
-    Space,
     Steps,
     Typography
 } from 'antd';
@@ -21,6 +20,7 @@ import Text from "antd/es/typography/Text";
 import {getRes} from "../utils/constants";
 import {mapToQueryString} from "../utils/helpers";
 import DisclaimerAgreement from "./DisclaimerAgreement";
+import UpgradeButtion from './UpgradeButtion';
 
 const FormItem = Form.Item;
 const {Title} = Typography;
@@ -63,8 +63,6 @@ const IndexLayout = () => {
         }
         return 0;
     }
-
-    const {modal} = App.useApp()
 
     const [state, setState] = useState<AppState>({
         current: 0,
@@ -196,29 +194,7 @@ const IndexLayout = () => {
                 marginTop: 32, marginBottom: 32, width: "100%",
                 maxWidth: "960px"
             }}>
-                <div hidden={getRes()['upgradeTips'] === ''}>
-                    <Alert type='info'
-                           action={
-                               <Space.Compact>
-                                   <Button size={"middle"} type="default" onClick={() => {
-                                       modal.info({
-                                           title:getRes()['newVersion'],
-                                           content: <div
-                                               dangerouslySetInnerHTML={{__html: getRes()['upgradeChangeLog']}}></div>,
-                                       })
-                                   }}>
-                                       {getRes()['detail']}
-                                   </Button>
-                                   <Button size={"middle"} type="primary" href={getRes()['upgradeDownloadUrl']}>
-                                       {getRes()['download']}
-                                   </Button>
-                               </Space.Compact>
-                           }
-                           message={<div
-                               dangerouslySetInnerHTML={{__html: getRes()['upgradeTips']}}/>}
-                           showIcon/>
-                    <Divider/>
-                </div>
+                <UpgradeButtion/>
                 <div hidden={getRes()['utfTips'] === ''}>
                     <Alert type='error'
                            message={<div

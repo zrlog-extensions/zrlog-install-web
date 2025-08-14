@@ -6,6 +6,7 @@
   "dependencies": {
     "@ant-design/cssinjs": "1.21.1",
     "styled-components": "6.1.15",
+    "marked": "16.0.0",
     "antd": "5.24.5",
     "axios": "1.8.4",
     "react": "18.3.1",
@@ -15,7 +16,7 @@
   },
   "scripts": {
     "lint": "yarn type-check",
-    "prepare": "cd ../../../../ && husky install src/main/frontend/.husky",
+    "prepare": "cd ../../../ && husky install src/main/frontend/.husky",
     "pre-commit": "yarn lint",
     "start": "react-scripts start",
     "type-check": "tsc --project tsconfig.json --pretty --noEmit",

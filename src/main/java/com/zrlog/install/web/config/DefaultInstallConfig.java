@@ -71,7 +71,7 @@ public class DefaultInstallConfig implements InstallConfig {
         lastVersionInfo.setLatestVersion(false);
         lastVersionInfo.setNewVersion("3.2.0");
         lastVersionInfo.setDownloadUrl("https://dl.zrlog.com/release/zrlog.zip");
-        lastVersionInfo.setChangeLog("Change Log content");
+        lastVersionInfo.setChangeLog("### Change Log content\n1. test1\n2. test2\n3. test3");
         return lastVersionInfo;
     }
 

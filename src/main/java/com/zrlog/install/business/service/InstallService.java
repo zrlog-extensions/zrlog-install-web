@@ -9,7 +9,6 @@ import com.hibegin.template.BasicTemplateRender;
 import com.zrlog.install.business.type.TestConnectDbResult;
 import com.zrlog.install.business.vo.InstallConfigVO;
 import com.zrlog.install.util.InstallI18nUtil;
-import com.zrlog.install.util.MarkdownUtil;
 import com.zrlog.install.util.SqlConvertUtils;
 import com.zrlog.install.util.StringUtils;
 import com.zrlog.install.web.InstallAction;
@@ -202,27 +201,30 @@ public class InstallService {
             Map<String, Object> data = new HashMap<>();
             data.put("editUrl", contextPath + "/admin/article-edit?id=" + logId);
             String markdown = new BasicTemplateRender(data, InstallService.class).render(in);
-            String content = MarkdownUtil.renderMd(markdown);
-            params.add(true);
-            params.add(InstallI18nUtil.getInstallStringFromRes("defaultType"));
-            params.add("hello-world");
-            params.add(InstallI18nUtil.getInstallStringFromRes("helloWorld"));
-            params.add(content);
-            params.add(getPlainSearchText(content));
-            params.add(markdown);
-            params.add(content);
-            String installDate = configMsg.get("installDate");
-            if (StringUtils.isEmpty(installDate)) {
-                params.add(new Date());
-                params.add(new Date());
-            } else {
-                Date parsedDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z").parse(installDate);
-                params.add(parsedDate);
-                params.add(parsedDate);
-            }
+            //html read
+            try (InputStream htmlIn = InstallService.class.getResourceAsStream("/i18n/init-blog/" + installConfig.getAcceptLanguage() + ".html")) {
+                String content = new BasicTemplateRender(data, InstallService.class).render(htmlIn);
+                params.add(true);
+                params.add(InstallI18nUtil.getInstallStringFromRes("defaultType"));
+                params.add("hello-world");
+                params.add(InstallI18nUtil.getInstallStringFromRes("helloWorld"));
+                params.add(content);
+                params.add(getPlainSearchText(content));
+                params.add(markdown);
+                params.add(content);
+                String installDate = configMsg.get("installDate");
+                if (StringUtils.isEmpty(installDate)) {
+                    params.add(new Date());
+                    params.add(new Date());
+                } else {
+                    Date parsedDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z").parse(installDate);
+                    params.add(parsedDate);
+                    params.add(parsedDate);
+                }
 
-            params.add(false);
-            params.add(false);
+                params.add(false);
+                params.add(false);
+            }
         }
         return dao.execute(insetLog, params.toArray());
     }

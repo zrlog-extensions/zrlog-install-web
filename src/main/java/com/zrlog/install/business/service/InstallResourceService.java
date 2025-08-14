@@ -3,7 +3,6 @@ package com.zrlog.install.business.service;
 import com.hibegin.http.server.api.HttpRequest;
 import com.zrlog.install.business.response.LastVersionInfo;
 import com.zrlog.install.util.InstallI18nUtil;
-import com.zrlog.install.util.MarkdownUtil;
 import com.zrlog.install.web.InstallConstants;
 
 import java.io.InputStream;
@@ -40,13 +39,13 @@ public class InstallResourceService {
         installMap.remove("installedTips");
         try (InputStream inputStream = InstallResourceService.class.getResourceAsStream("/i18n/disclaimer-agreement/" + lang + ".md")) {
             if (Objects.nonNull(inputStream)) {
-                installMap.put("disclaimerAgreement", MarkdownUtil.renderMd(new String(inputStream.readAllBytes())));
+                installMap.put("disclaimerAgreement", new String(inputStream.readAllBytes()));
             } else {
                 installMap.put("disclaimerAgreement", "");
             }
             LastVersionInfo lastVersionInfo = InstallConstants.installConfig.getLastVersionInfo();
             if (Objects.nonNull(lastVersionInfo) && Objects.equals(lastVersionInfo.getLatestVersion(), false)) {
-                installMap.put("upgradeTips", MarkdownUtil.renderMd(installMap.get("newVersion") + " v" + lastVersionInfo.getNewVersion()));
+                installMap.put("upgradeTips", installMap.get("newVersion") + " v" + lastVersionInfo.getNewVersion());
                 installMap.put("upgradeChangeLog", lastVersionInfo.getChangeLog());
                 installMap.put("upgradeDownloadUrl", lastVersionInfo.getDownloadUrl());
             } else {
