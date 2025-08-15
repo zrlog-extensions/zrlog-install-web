@@ -32,10 +32,6 @@ public class InstallSuccessContentUtils {
             data.put("dbName", uri.getPath().substring(1));
             data.put("dbType", uri.getScheme());
             data.put("dbProperties", Arrays.stream(IOUtil.getStringInputStream(new FileInputStream(dbProperties)).split("\n")).filter(e -> !e.startsWith("#")).collect(Collectors.joining("<br/>")));
-            //app
-            data.put("appName", serverConfig.getApplicationName());
-            data.put("serverPort", serverConfig.getPort());
-            data.put("contextPath", serverConfig.getContextPath());
             return data;
         }
     }

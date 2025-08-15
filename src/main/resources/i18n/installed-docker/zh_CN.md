@@ -10,9 +10,4 @@ db.port=${dbPort}
 db.username=${dbUserName}
 db.database=${dbName}
 db.type=${dbType}
-server.port=${serverPort}
-app.name=${appName}
-contextPath=${contextPath}
-# expose port
-export.port=28080
 ```
