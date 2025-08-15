@@ -26,7 +26,7 @@ public interface InstallConfig {
 
     String getBuildVersion();
 
-    String getJdbcUrlQueryStr();
+    String getJdbcUrlQueryStr(String dbType);
 
     HttpErrorHandle getErrorHandler();
 }

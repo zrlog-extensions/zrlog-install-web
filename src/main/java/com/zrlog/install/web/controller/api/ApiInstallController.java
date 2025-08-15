@@ -64,7 +64,7 @@ public class ApiInstallController extends Controller {
         String dbType = getRequest().getParaToStr("dbType", "mysql");
         String jdbcUrl = "jdbc:" + dbType + "://" + getRequest().getParaToStr("dbHost") + ":" + getRequest().getParaToStr("dbPort") + "/" + getRequest().getParaToStr("dbName");
         if (Objects.equals(dbType, "mysql")) {
-            jdbcUrl += "?" + InstallConstants.installConfig.getJdbcUrlQueryStr();
+            jdbcUrl += "?" + InstallConstants.installConfig.getJdbcUrlQueryStr(dbType);
             dbConn.put("driverClass", "com.mysql.cj.jdbc.Driver");
         }
         dbConn.put("jdbcUrl", jdbcUrl);

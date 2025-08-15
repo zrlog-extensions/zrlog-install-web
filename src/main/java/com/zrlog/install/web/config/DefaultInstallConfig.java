@@ -81,8 +81,8 @@ public class DefaultInstallConfig implements InstallConfig {
     }
 
     @Override
-    public String getJdbcUrlQueryStr() {
-        return "characterEncoding=UTF-8&allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=GMT";
+    public String getJdbcUrlQueryStr(String dbType) {
+        return "characterEncoding=utf8&allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=GMT";
     }
 
     @Override
