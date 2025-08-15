@@ -187,7 +187,8 @@ const IndexLayout = () => {
                 marginTop: 32, marginBottom: 32, width: "100%",
                 maxWidth: "960px"
             }}>
-                <Result status={"error"} title={getRes().installedTitle} subTitle={getRes().installedTips}/>
+                <Result status={"error"} title={getRes().installedTitle} subTitle={getRes().installedTips}
+                        style={{padding: 0}}/>
                 <InstallSuccessContent content={state.installSuccessContent} askConfig={state.askConfig}/>
             </Card>
         </Layout>

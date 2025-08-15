@@ -11,6 +11,9 @@ const InstallSuccessContent = ({content, askConfig}: {
 
     const {message} = App.useApp();
 
+    if (!askConfig && getRes()['installed']) {
+        return <></>
+    }
 
     const getOkBtn = () => {
         if (askConfig) {
@@ -24,11 +27,9 @@ const InstallSuccessContent = ({content, askConfig}: {
                 })
             }} size={"large"} type={"link"}>{getRes()['askConfigTips']}</Button>
         }
-        if (getRes()['installed']) {
-            return <></>
-        }
         return <Button href={document.baseURI} size={"large"} type={"link"}>{getRes().installSuccessView}</Button>
     }
+
 
     return <div style={{textAlign: 'center'}}>
         {!askConfig && <Title level={3} type='success'>{getRes().installSuccess}</Title>}
