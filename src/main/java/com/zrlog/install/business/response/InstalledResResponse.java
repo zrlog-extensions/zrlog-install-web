@@ -3,11 +3,12 @@ package com.zrlog.install.business.response;
 public class InstalledResResponse {
 
     private Boolean installed;
-    private Boolean missingConfig;
     private String installedTitle;
     private String installedTips;
     private String missingConfigTips;
-    private Boolean containerMode;
+    private Boolean askConfig;
+    private String askConfigTips;
+    private String installSuccessContent;
 
     public Boolean getInstalled() {
         return installed;
@@ -15,14 +16,6 @@ public class InstalledResResponse {
 
     public void setInstalled(Boolean installed) {
         this.installed = installed;
-    }
-
-    public Boolean getMissingConfig() {
-        return missingConfig;
-    }
-
-    public void setMissingConfig(Boolean missingConfig) {
-        this.missingConfig = missingConfig;
     }
 
     public String getInstalledTitle() {
@@ -41,10 +34,6 @@ public class InstalledResResponse {
         this.installedTips = installedTips;
     }
 
-    public Boolean getContainerMode() {
-        return containerMode;
-    }
-
     public String getMissingConfigTips() {
         return missingConfigTips;
     }
@@ -53,7 +42,27 @@ public class InstalledResResponse {
         this.missingConfigTips = missingConfigTips;
     }
 
-    public void setContainerMode(Boolean containerMode) {
-        this.containerMode = containerMode;
+    public Boolean getAskConfig() {
+        return askConfig;
+    }
+
+    public void setAskConfig(Boolean askConfig) {
+        this.askConfig = askConfig;
+    }
+
+    public String getInstallSuccessContent() {
+        return installSuccessContent;
+    }
+
+    public void setInstallSuccessContent(String installSuccessContent) {
+        this.installSuccessContent = installSuccessContent;
+    }
+
+    public String getAskConfigTips() {
+        return askConfigTips;
+    }
+
+    public void setAskConfigTips(String askConfigTips) {
+        this.askConfigTips = askConfigTips;
     }
 }

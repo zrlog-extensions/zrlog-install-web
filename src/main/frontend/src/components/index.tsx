@@ -50,7 +50,7 @@ type AppState = {
     installing: boolean
     dataBaseInfo: Record<string, string | number>,
     weblogInfo: Record<string, string | number>;
-    installSuccessConntent: string;
+    installSuccessContent: string;
     askConfig: boolean;
 }
 
@@ -72,7 +72,7 @@ const IndexLayout = () => {
         installed: getRes()['installed'],
         askConfig: getRes()['askConfig'],
         testConnecting: false,
-        installSuccessConntent: "",
+        installSuccessContent: getRes()["installSuccessContent"],
         installing: false,
         dataBaseInfo: {
             dbType: "mysql",
@@ -163,7 +163,7 @@ const IndexLayout = () => {
                         ...state,
                         current: current,
                         installing: false,
-                        installSuccessConntent: data.data.content
+                        installSuccessContent: data.data.content
                     });
                 } else {
                     message.error(data.message);
@@ -179,7 +179,18 @@ const IndexLayout = () => {
     }
 
     if (state.installed) {
-        return <Result status={"error"} title={getRes().installedTitle} subTitle={getRes().installedTips}/>
+        return <Layout style={{
+            height: "100vh", paddingRight: 12,
+            paddingLeft: 12, display: "flex", alignItems: "center"
+        }}>
+            <Card style={{
+                marginTop: 32, marginBottom: 32, width: "100%",
+                maxWidth: "960px"
+            }}>
+                <Result status={"error"} title={getRes().installedTitle} subTitle={getRes().installedTips}/>
+                <InstallSuccessContent content={state.installSuccessContent} askConfig={state.askConfig}/>
+            </Card>
+        </Layout>
     }
 
     const showFeedback = () => {
@@ -291,7 +302,7 @@ const IndexLayout = () => {
                         </Form>
                     )}
                     {state.current === 3 && (
-                        <InstallSuccessContent content={state.installSuccessConntent} askConfig={state.askConfig}/>
+                        <InstallSuccessContent content={state.installSuccessContent} askConfig={state.askConfig}/>
                     )}
                 </div>
                 <div style={{paddingTop: state.current <= 2 ? 20 : 0}}>

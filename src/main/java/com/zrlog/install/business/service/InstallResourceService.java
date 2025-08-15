@@ -18,13 +18,14 @@ public class InstallResourceService {
         InstalledResResponse installedResResponse = new InstalledResResponse();
         installedResResponse.setInstalled(true);
         if (InstallConstants.installConfig.isContainerMode()) {
-            installedResResponse.setMissingConfig(InstallConstants.installConfig.isMissingConfig());
-            installedResResponse.setContainerMode(true);
-            if (installedResResponse.getMissingConfig()) {
+            if (InstallConstants.installConfig.isMissingConfig()) {
+                installedResResponse.setAskConfig(true);
+                installedResResponse.setInstallSuccessContent(InstallConstants.installConfig.getInstallSuccessData().getContent());
                 installedResResponse.setMissingConfigTips((String) installMap.get("missingConfigTips"));
+                installedResResponse.setAskConfigTips((String) installMap.get("askConfigTips"));
             }
         } else {
-            installedResResponse.setContainerMode(false);
+            installedResResponse.setAskConfig(false);
         }
         installedResResponse.setInstalledTitle((String) installMap.get("installedTitle"));
         if (InstallConstants.installConfig.isWarMode()) {
