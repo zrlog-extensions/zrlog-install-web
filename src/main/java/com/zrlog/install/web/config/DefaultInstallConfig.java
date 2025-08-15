@@ -3,6 +3,7 @@ package com.zrlog.install.web.config;
 import com.hibegin.http.server.api.HttpErrorHandle;
 import com.hibegin.http.server.util.PathUtil;
 import com.zrlog.install.business.response.LastVersionInfo;
+import com.zrlog.install.business.vo.InstallSuccessData;
 import com.zrlog.install.exception.AbstractInstallException;
 import com.zrlog.install.web.InstallAction;
 

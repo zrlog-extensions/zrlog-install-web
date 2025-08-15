@@ -1,11 +1,14 @@
 package com.zrlog.install.business.service;
 
 import com.hibegin.http.server.api.HttpRequest;
+import com.hibegin.http.server.config.ServerConfig;
 import com.zrlog.install.business.response.InstalledResResponse;
 import com.zrlog.install.business.response.LastVersionInfo;
 import com.zrlog.install.util.InstallI18nUtil;
+import com.zrlog.install.util.InstallSuccessContentUtils;
 import com.zrlog.install.web.InstallConstants;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Map;
@@ -14,13 +17,13 @@ import java.util.TreeMap;
 
 public class InstallResourceService {
 
-    private InstalledResResponse getInstalledResResponse(Map<String, Object> installMap) {
+    private InstalledResResponse getInstalledResResponse(Map<String, Object> installMap, ServerConfig serverConfig) {
         InstalledResResponse installedResResponse = new InstalledResResponse();
         installedResResponse.setInstalled(true);
         if (InstallConstants.installConfig.isContainerMode()) {
             if (InstallConstants.installConfig.isMissingConfig()) {
                 installedResResponse.setAskConfig(true);
-                installedResResponse.setInstallSuccessContent(InstallConstants.installConfig.getInstallSuccessData().getContent());
+                installedResResponse.setInstallSuccessContent(InstallSuccessContentUtils.getContent(InstallConstants.installConfig.getDbPropertiesFile(), true, serverConfig));
                 installedResResponse.setMissingConfigTips((String) installMap.get("missingConfigTips"));
                 installedResResponse.setAskConfigTips((String) installMap.get("askConfigTips"));
             }
@@ -40,7 +43,7 @@ public class InstallResourceService {
         String lang = InstallConstants.installConfig.getAcceptLanguage();
         Map<String, Object> installMap = new TreeMap<>(InstallI18nUtil.getInstallMap());
         if (InstallConstants.installConfig.getAction().isInstalled()) {
-            return getInstalledResResponse(installMap);
+            return getInstalledResResponse(installMap, request.getServerConfig());
         }
         installMap.put("currentVersion", InstallConstants.installConfig.getBuildVersion());
         //encoding ok, remove utfTips

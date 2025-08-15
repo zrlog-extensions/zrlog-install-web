@@ -9,11 +9,14 @@ import com.zrlog.install.business.service.InstallResourceService;
 import com.zrlog.install.business.service.InstallService;
 import com.zrlog.install.business.type.TestConnectDbResult;
 import com.zrlog.install.business.vo.InstallConfigVO;
+import com.zrlog.install.business.vo.InstallSuccessData;
 import com.zrlog.install.exception.*;
+import com.zrlog.install.util.InstallSuccessContentUtils;
 import com.zrlog.install.util.StringUtils;
 import com.zrlog.install.web.InstallConstants;
 import com.zrlog.install.web.config.InstallConfig;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -75,7 +78,7 @@ public class ApiInstallController extends Controller {
      * 数据库检查通过后，根据填写信息，执行数据表，表数据的初始化
      */
     @ResponseBody
-    public InstallResultResponse startInstall() {
+    public InstallResultResponse startInstall() throws IOException {
         Map<String, String> configMsg = new HashMap<>();
         configMsg.put("title", getRequest().getParaToStr("title", ""));
         configMsg.put("second_title", getRequest().getParaToStr("second_title", ""));
@@ -89,7 +92,7 @@ public class ApiInstallController extends Controller {
         if (!new InstallService(installConfig, configVO).install()) {
             throw new InstallException(TestConnectDbResult.UNKNOWN);
         }
-        return new InstallResultResponse(installConfig.getInstallSuccessData());
+        return new InstallResultResponse(new InstallSuccessData(InstallSuccessContentUtils.getContent(installConfig.getDbPropertiesFile(), installConfig.isContainerMode(), request.getServerConfig())));
     }
 
     @ResponseBody
