@@ -11,6 +11,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class DefaultInstallConfig implements InstallConfig {
     @Override
@@ -81,8 +82,11 @@ public class DefaultInstallConfig implements InstallConfig {
     }
 
     @Override
-    public String getJdbcUrlQueryStr(String dbType) {
-        return "characterEncoding=utf8&allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=GMT";
+    public String getJdbcUrlQueryStr(String dbType, Map<String, String[]> paramMap) {
+        if (Objects.equals(dbType, "mysql")) {
+            return "characterEncoding=utf8&allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=GMT";
+        }
+        return "";
     }
 
     @Override

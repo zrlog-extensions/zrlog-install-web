@@ -5,6 +5,7 @@ import com.zrlog.install.business.response.LastVersionInfo;
 import com.zrlog.install.web.InstallAction;
 
 import java.io.File;
+import java.util.Map;
 
 public interface InstallConfig {
 
@@ -26,7 +27,7 @@ public interface InstallConfig {
 
     String getBuildVersion();
 
-    String getJdbcUrlQueryStr(String dbType);
+    String getJdbcUrlQueryStr(String dbType, Map<String, String[]> paramMap);
 
     HttpErrorHandle getErrorHandler();
 }
