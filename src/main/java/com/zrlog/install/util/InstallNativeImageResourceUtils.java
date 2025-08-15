@@ -15,11 +15,11 @@ public class InstallNativeImageResourceUtils {
     public static List<String> getResourceNameList() {
         List<String> resourceNameList = new ArrayList<>();
         resourceNameList.add("/i18n/disclaimer-agreement/en_US.md");
-        resourceNameList.add("/i18n/disclaimer-agreement/en_US.html");
         resourceNameList.add("/i18n/disclaimer-agreement/zh_CN.md");
-        resourceNameList.add("/i18n/disclaimer-agreement/zh_CN.html");
         resourceNameList.add("/i18n/init-blog/en_US.md");
+        resourceNameList.add("/i18n/init-blog/en_US.html");
         resourceNameList.add("/i18n/init-blog/zh_CN.md");
+        resourceNameList.add("/i18n/init-blog/zh_CN.html");
         resourceNameList.add("/i18n/install_en_US.properties");
         resourceNameList.add("/i18n/install_zh_CN.properties");
         try (InputStream assetJson = InstallNativeImageResourceUtils.class.getResourceAsStream("/install/asset-manifest.json")) {
