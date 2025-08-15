@@ -24,8 +24,8 @@ public class InstallNativeImageResourceUtils {
         resourceNameList.add("/i18n/init-blog/en_US.html");
         resourceNameList.add("/i18n/init-blog/zh_CN.md");
         resourceNameList.add("/i18n/init-blog/zh_CN.html");
-        resourceNameList.add("/i18n/installed/faas_zh_CN.md");
-        resourceNameList.add("/i18n/installed/docker_zh_CN.md");
+        resourceNameList.add("/i18n/installed-faas/zh_CN.md");
+        resourceNameList.add("/i18n/installed-docker/zh_CN.md");
         resourceNameList.add("/i18n/install_en_US.properties");
         resourceNameList.add("/i18n/install_zh_CN.properties");
         try (InputStream assetJson = InstallNativeImageResourceUtils.class.getResourceAsStream("/install/asset-manifest.json")) {

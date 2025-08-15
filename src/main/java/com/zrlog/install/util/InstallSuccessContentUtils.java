@@ -42,9 +42,9 @@ public class InstallSuccessContentUtils {
 
     private static String getMdFilePath() {
         if (EnvKit.isFaaSMode()) {
-            return "/i18n/installed/faas_zh_CN.md";
+            return "/i18n/installed-faas/zh_CN.md";
         }
-        return "/i18n/installed/docker_zh_CN.md";
+        return "/i18n/installed-docker/zh_CN.md";
     }
 
     public static String getContent(File dbProperties, boolean containerMode, ServerConfig serverConfig) {
