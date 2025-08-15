@@ -50,7 +50,7 @@ public class InstallResourceService {
         //这个是不需要的
         installMap.remove("installedWarTips");
         installMap.remove("installedTips");
-        installMap.put("askConfigTips", InstallConstants.installConfig.isContainerMode());
+        installMap.put("askConfig", InstallConstants.installConfig.isContainerMode());
         try (InputStream inputStream = InstallResourceService.class.getResourceAsStream("/i18n/disclaimer-agreement/" + lang + ".md")) {
             if (Objects.nonNull(inputStream)) {
                 installMap.put("disclaimerAgreement", new String(inputStream.readAllBytes()));
