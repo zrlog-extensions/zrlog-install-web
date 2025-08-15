@@ -89,7 +89,7 @@ public class ApiInstallController extends Controller {
         if (!new InstallService(installConfig, configVO).install()) {
             throw new InstallException(TestConnectDbResult.UNKNOWN);
         }
-        return new InstallResultResponse();
+        return new InstallResultResponse(installConfig.getInstallSuccessData());
     }
 
     @ResponseBody

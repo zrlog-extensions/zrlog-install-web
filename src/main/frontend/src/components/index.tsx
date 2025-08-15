@@ -21,6 +21,7 @@ import {getRes} from "../utils/constants";
 import {mapToQueryString} from "../utils/helpers";
 import DisclaimerAgreement from "./DisclaimerAgreement";
 import UpgradeButtion from './UpgradeButtion';
+import InstallSuccessContent from './InstallSuccessContent';
 
 const FormItem = Form.Item;
 const {Title} = Typography;
@@ -49,6 +50,7 @@ type AppState = {
     installing: boolean
     dataBaseInfo: Record<string, string | number>,
     weblogInfo: Record<string, string | number>;
+    installSuccessConntent: string;
 }
 
 
@@ -68,6 +70,7 @@ const IndexLayout = () => {
         current: 0,
         installed: getRes()['installed'],
         testConnecting: false,
+        installSuccessConntent: "",
         installing: false,
         dataBaseInfo: {
             dbType: "mysql",
@@ -154,7 +157,12 @@ const IndexLayout = () => {
             }).then(({data}) => {
                 if (!data.error) {
                     const current = state.current + 1;
-                    setState({...state, current: current, installing: false});
+                    setState({
+                        ...state,
+                        current: current,
+                        installing: false,
+                        installSuccessConntent: data.data.content
+                    });
                 } else {
                     message.error(data.message);
                     setState({...state, installing: false})
@@ -281,13 +289,10 @@ const IndexLayout = () => {
                         </Form>
                     )}
                     {state.current === 3 && (
-                        <div style={{textAlign: 'center'}}>
-                            <Title level={3} type='success'>{getRes().installSuccess}</Title>
-                            <a href={document.baseURI}>{getRes().installSuccessView}</a>
-                        </div>
+                        <InstallSuccessContent content={state.installSuccessConntent}/>
                     )}
                 </div>
-                <div style={{paddingTop: '20px'}}>
+                <div style={{paddingTop: state.current <= 2 ? 20 : 0}}>
                     {state.current === 0 && (
                         <Button type="primary" onClick={() => next()}>
                             {getRes().installAgreementNext}
