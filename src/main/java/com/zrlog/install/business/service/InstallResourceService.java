@@ -8,7 +8,6 @@ import com.zrlog.install.util.InstallI18nUtil;
 import com.zrlog.install.util.InstallSuccessContentUtils;
 import com.zrlog.install.web.InstallConstants;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Map;
@@ -20,13 +19,11 @@ public class InstallResourceService {
     private InstalledResResponse getInstalledResResponse(Map<String, Object> installMap, ServerConfig serverConfig) {
         InstalledResResponse installedResResponse = new InstalledResResponse();
         installedResResponse.setInstalled(true);
-        if (InstallConstants.installConfig.isContainerMode()) {
-            if (InstallConstants.installConfig.isMissingConfig()) {
-                installedResResponse.setAskConfig(true);
-                installedResResponse.setInstallSuccessContent(InstallSuccessContentUtils.getContent(InstallConstants.installConfig.getDbPropertiesFile(), true, serverConfig));
-                installedResResponse.setMissingConfigTips((String) installMap.get("missingConfigTips"));
-                installedResResponse.setAskConfigTips((String) installMap.get("askConfigTips"));
-            }
+        if (InstallConstants.installConfig.isContainerMode() && InstallConstants.installConfig.isMissingConfig()) {
+            installedResResponse.setAskConfig(true);
+            installedResResponse.setInstallSuccessContent(InstallSuccessContentUtils.getContent(InstallConstants.installConfig.getDbPropertiesFile(), true, serverConfig));
+            installedResResponse.setMissingConfigTips((String) installMap.get("missingConfigTips"));
+            installedResResponse.setAskConfigTips((String) installMap.get("askConfigTips"));
         } else {
             installedResResponse.setAskConfig(false);
         }
