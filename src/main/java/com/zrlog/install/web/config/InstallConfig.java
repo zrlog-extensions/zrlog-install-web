@@ -32,6 +32,10 @@ public interface InstallConfig {
 
     HttpErrorHandle getErrorHandler();
 
+    boolean isContainerMode();
+
+    boolean isMissingConfig();
+
     default InstallSuccessData getInstallSuccessData() {
         return new InstallSuccessData("### 大功告成\n- 测试1\n- 测试2");
     }

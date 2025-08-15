@@ -4,9 +4,8 @@ import com.google.gson.Gson;
 import com.hibegin.common.util.IOUtil;
 import com.hibegin.http.server.api.HttpRequest;
 import com.hibegin.http.server.web.Controller;
+import com.zrlog.install.business.response.InstalledResResponse;
 import com.zrlog.install.business.service.InstallResourceService;
-import com.zrlog.install.util.StringUtils;
-import com.zrlog.install.web.InstallConstants;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -41,12 +40,12 @@ public class InstallController extends Controller {
         document.body().removeClass("dark");
         document.body().removeClass("light");
         Objects.requireNonNull(document.selectFirst("base")).attr("href", request.getContextPath() + "/");
-        Map<String, Object> stringObjectMap = new InstallResourceService().installResourceInfo(getRequest());
+        Object stringObjectMap = new InstallResourceService().installResourceInfo(getRequest());
         Objects.requireNonNull(document.getElementById("resourceInfo")).text(new Gson().toJson(stringObjectMap));
-        if (InstallConstants.installConfig.getAction().isInstalled()) {
-            document.title(String.valueOf(stringObjectMap.get("installedTitle")));
+        if (stringObjectMap instanceof InstalledResResponse) {
+            document.title(((InstalledResResponse) stringObjectMap).getInstalledTitle());
         } else {
-            document.title(String.valueOf(stringObjectMap.get("installWizard")));
+            document.title(String.valueOf(((Map<String, Object>) stringObjectMap).get("installWizard")));
         }
         Elements favicon = document.head().select("link[rel=shortcut icon]");
         if (!favicon.isEmpty()) {

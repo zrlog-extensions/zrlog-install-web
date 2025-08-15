@@ -2,17 +2,21 @@ package com.zrlog.install.util;
 
 import com.google.gson.Gson;
 import com.hibegin.http.server.util.NativeImageUtils;
+import com.zrlog.install.business.response.*;
+import com.zrlog.install.business.vo.InstallConfigVO;
+import com.zrlog.install.business.vo.InstallSuccessData;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class InstallNativeImageResourceUtils {
 
-    public static List<String> getResourceNameList() {
+    public static void reg() {
         List<String> resourceNameList = new ArrayList<>();
         resourceNameList.add("/i18n/disclaimer-agreement/en_US.md");
         resourceNameList.add("/i18n/disclaimer-agreement/zh_CN.md");
@@ -34,11 +38,14 @@ public class InstallNativeImageResourceUtils {
         }
         resourceNameList.add("/init-table-structure.sql");
         NativeImageUtils.doResourceLoadByResourceNames(resourceNameList);
-        return resourceNameList;
+        NativeImageUtils.gsonNativeAgentByClazz(Arrays.asList(InstalledResResponse.class,
+                LastVersionInfo.class, InstallResultResponse.class,
+                TestConnectResponse.class, InstallResourceResponse.class,
+                //vo
+                InstallConfigVO.class, InstallSuccessData.class));
     }
 
     public static void main(String[] args) {
-        List<String> resourceNameList = getResourceNameList();
-        System.out.println("resourceNameList = " + resourceNameList);
+        reg();
     }
 }

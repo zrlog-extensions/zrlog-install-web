@@ -102,9 +102,19 @@ public class DefaultInstallConfig implements InstallConfig {
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", 9999);
                 error.put("message", e.getMessage());
-                response.renderJson(error);
+                e.printStackTrace();
                 response.renderJson(error);
             }
         };
+    }
+
+    @Override
+    public boolean isContainerMode() {
+        return true;
+    }
+
+    @Override
+    public boolean isMissingConfig() {
+        return true;
     }
 }

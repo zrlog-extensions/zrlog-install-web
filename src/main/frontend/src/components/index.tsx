@@ -51,6 +51,7 @@ type AppState = {
     dataBaseInfo: Record<string, string | number>,
     weblogInfo: Record<string, string | number>;
     installSuccessConntent: string;
+    askConfig: boolean;
 }
 
 
@@ -69,6 +70,7 @@ const IndexLayout = () => {
     const [state, setState] = useState<AppState>({
         current: 0,
         installed: getRes()['installed'],
+        askConfig: getRes()['askConfig'],
         testConnecting: false,
         installSuccessConntent: "",
         installing: false,
@@ -289,7 +291,7 @@ const IndexLayout = () => {
                         </Form>
                     )}
                     {state.current === 3 && (
-                        <InstallSuccessContent content={state.installSuccessConntent}/>
+                        <InstallSuccessContent content={state.installSuccessConntent} askConfig={state.askConfig}/>
                     )}
                 </div>
                 <div style={{paddingTop: state.current <= 2 ? 20 : 0}}>
