@@ -146,6 +146,9 @@ public class InstallService {
         File lockFile = installConfig.getAction().getLockFile();
         lockFile.getParentFile().mkdirs();
         lockFile.createNewFile();
+        if (installConfig.isMissingConfig()) {
+            LOGGER.info("Need config, skip call action.installSuccess()");
+        }
         //install success
         installAction.installSuccess();
     }
