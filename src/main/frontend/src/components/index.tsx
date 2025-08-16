@@ -1,14 +1,13 @@
 import {useRef, useState} from 'react';
 import {
     Alert,
-    App,
     Button,
     Card,
     Divider,
     Form,
     FormInstance,
     Input,
-    Layout,
+    Layout, message,
     Result,
     Select,
     Steps,
@@ -97,7 +96,7 @@ const IndexLayout = () => {
 
     const formDataBaseInfoRef = useRef<FormInstance>(null);
     const formWeblogInfoRef = useRef<FormInstance>(null);
-    const {message} = App.useApp();
+    const [messageApi, contextHolder] = message.useMessage({maxCount: 3});
 
     const setDatabaseValue = (changedValues: Record<string, string | number>, allValues: Record<string, string | number>) => {
         if (formDataBaseInfoRef === undefined || formDataBaseInfoRef.current === undefined || formDataBaseInfoRef.current === null) {
@@ -143,7 +142,7 @@ const IndexLayout = () => {
                     const current = state.current + 1;
                     setState({...state, current: current, testConnecting: false});
                 } else {
-                    message.error(data.message);
+                    messageApi.error(data.message);
                     setState({...state, testConnecting: false})
                 }
             })
@@ -166,7 +165,7 @@ const IndexLayout = () => {
                         installSuccessContent: data.data.content
                     });
                 } else {
-                    message.error(data.message);
+                    messageApi.error(data.message);
                     setState({...state, installing: false})
                 }
             })
@@ -179,19 +178,17 @@ const IndexLayout = () => {
     }
 
     if (state.installed) {
-        return <Layout style={{
-            height: "100vh", paddingRight: 12,
-            paddingLeft: 12, display: "flex", alignItems: "center"
-        }}>
-            <Card style={{
-                marginTop: 32, marginBottom: 32, width: "100%",
-                maxWidth: "960px"
+        if (state.askConfig) {
+            return <Layout style={{
+                height: "100vh", paddingRight: 12,
+                paddingLeft: 12, display: "flex", alignItems: "center"
             }}>
-                <Result status={"error"} title={getRes().installedTitle} subTitle={getRes().installedTips}
-                        style={{padding: 0}}/>
                 <InstallSuccessContent content={state.installSuccessContent} askConfig={state.askConfig}/>
-            </Card>
-        </Layout>
+            </Layout>
+        }
+        return <Result status={"error"} title={getRes().installedTitle} subTitle={getRes().installedTips}
+                       style={{padding: 0}}/>
+
     }
 
     const showFeedback = () => {
@@ -212,9 +209,10 @@ const IndexLayout = () => {
             height: "100vh", paddingRight: 12,
             paddingLeft: 12, display: "flex", alignItems: "center"
         }}>
+            {contextHolder}
             <Card title={getRes().installWizard} style={{
                 marginTop: 32, marginBottom: 32, width: "100%",
-                maxWidth: "960px"
+                maxWidth: 960
             }}>
                 <UpgradeButtion/>
                 <div hidden={getRes()['utfTips'] === ''}>
@@ -303,7 +301,9 @@ const IndexLayout = () => {
                         </Form>
                     )}
                     {state.current === 3 && (
-                        <InstallSuccessContent content={state.installSuccessContent} askConfig={state.askConfig}/>
+                        <div style={{textAlign: "center"}}>
+                            <InstallSuccessContent content={state.installSuccessContent} askConfig={state.askConfig}/>
+                        </div>
                     )}
                 </div>
                 <div style={{paddingTop: state.current <= 2 ? 20 : 0}}>

@@ -1,4 +1,4 @@
-import {App, Button, Card, Typography} from "antd"
+import {Button, Card, message, Typography} from "antd"
 import Title from "antd/es/typography/Title"
 import axios from "axios"
 import {marked} from "marked"
@@ -9,7 +9,7 @@ const InstallSuccessContent = ({content, askConfig}: {
     askConfig: boolean,
 }) => {
 
-    const {message} = App.useApp();
+    const [messageApi, contextHolder] = message.useMessage({maxCount: 3});
 
     if (!askConfig && getRes()['installed']) {
         return <></>
@@ -20,7 +20,7 @@ const InstallSuccessContent = ({content, askConfig}: {
             return <Button onClick={() => {
                 axios.get("/api/install/installResource").then(({data}) => {
                     if (data.data.askConfig) {
-                        message.error(data.data.missingConfigTips);
+                        messageApi.error(data.data.missingConfigTips);
                     } else {
                         window.location.href = document.baseURI;
                     }
@@ -31,16 +31,27 @@ const InstallSuccessContent = ({content, askConfig}: {
     }
 
 
-    return <div style={{textAlign: 'center'}}>
+    return <>
+        {contextHolder}
         {!askConfig && <Title level={3} type='success'>{getRes().installSuccess}</Title>}
         {(content && content.length > 0) && (
-            <Card>
+            <Card style={{
+                marginTop: 16,
+                marginBottom: 16,
+                width: "100%",
+                maxWidth: 960,
+                textAlign: "left",
+            }} styles={{
+                body: {
+                    paddingTop: 0,
+                }
+            }} title={getRes().installedTitle}>
                 <Typography
                     style={{textAlign: "left"}}
                     dangerouslySetInnerHTML={{__html: marked(content) as string}}/>
             </Card>)}
-        {getOkBtn()}
-    </div>
+            {getOkBtn()}
+    </>
 }
 
 export default InstallSuccessContent
