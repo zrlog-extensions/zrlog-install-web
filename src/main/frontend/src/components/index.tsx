@@ -186,9 +186,7 @@ const IndexLayout = () => {
                 <InstallSuccessContent content={state.installSuccessContent} askConfig={state.askConfig}/>
             </Layout>
         }
-        return <Result status={"error"} title={getRes().installedTitle} subTitle={getRes().installedTips}
-                       style={{padding: 0}}/>
-
+        return <Result status={"error"} title={getRes().installedTitle} subTitle={getRes().installedTips}/>
     }
 
     const showFeedback = () => {
