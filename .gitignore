@@ -10,3 +10,5 @@ pom.xml.versionsBackup
 conf/*.sql
 conf/sqlite-db.properties
 install-web-starter.jar
+.DS_Store
+**/.DS_Store

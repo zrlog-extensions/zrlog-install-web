@@ -83,10 +83,12 @@ public class InstallService {
         return map;
     }
 
-    static DataSourceWrapperImpl buildDataSource(Properties dbProperties, boolean dev) {
+    static DataSourceWrapperImpl buildDataSource(Properties dbProperties, boolean dev) throws ClassNotFoundException {
         DataSourceWrapperImpl dataSource = new DataSourceWrapperImpl(dbProperties, dev);
         if (!dataSource.isWebApi()) {
-            dataSource.setDriverClassName(dbProperties.getProperty("driverClass"));
+            String driverClass = dbProperties.getProperty("driverClass");
+            Class.forName(driverClass);
+            dataSource.setDriverClassName(driverClass);
             dataSource.setJdbcUrl(dbProperties.getProperty("jdbcUrl"));
         }
         dataSource.setUsername(dbProperties.getProperty("user"));
@@ -105,6 +107,9 @@ public class InstallService {
         try (DataSourceWrapperImpl ds = buildDataSource(properties, EnvKit.isDevMode())) {
             ds.testConnection();
             return TestConnectDbResult.SUCCESS;
+        } catch (ClassNotFoundException e) {
+            LOGGER.log(Level.SEVERE, "", e);
+            return TestConnectDbResult.MISSING_JDBC_DRIVER;
         } catch (SQLRecoverableException e) {
             LOGGER.log(Level.SEVERE, "", e);
             return TestConnectDbResult.CREATE_CONNECT_ERROR;
