@@ -23,6 +23,8 @@
     "upgradePreview": "1.0",
     "webCm": "<plugin name=\"statistics\" view=\"widget\"/>",
     "statistics_host": "faas-demo.zrlog.com",
+    "comment_base": "{\"baseUrl\":\"https://faas-demo.zrlog.com\"}",
+    "comment_type": "base",
     "system_notification": "测试通知"
   },
   "contextPath": ""
