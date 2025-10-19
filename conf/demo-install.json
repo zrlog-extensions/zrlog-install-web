@@ -25,6 +25,7 @@
     "statistics_host": "faas-demo.zrlog.com",
     "comment_base": "{\"baseUrl\":\"https://faas-demo.zrlog.com\"}",
     "comment_type": "base",
+    "comment_plugin_name": "comment",
     "system_notification": "测试通知"
   },
   "contextPath": ""
