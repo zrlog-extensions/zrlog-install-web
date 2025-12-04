@@ -27,8 +27,6 @@ const {Title} = Typography;
 
 const {Footer} = Layout;
 
-const {Step} = Steps;
-
 const formItemLayout = {
     labelCol: {
         xs: {span: 24},
@@ -220,11 +218,7 @@ const IndexLayout = () => {
                            showIcon/>
                     <Divider/>
                 </div>
-                <Steps current={state.current}>
-                    {getSteps().map(item => (
-                        <Step key={item.title + ""} title={item.title + ""}/>
-                    ))}
-                </Steps>
+                <Steps current={state.current} items={getSteps()}/>
                 <div style={{marginTop: '20px'}}>
                     {state.current === 0 && <DisclaimerAgreement/>}
                     {state.current === 1 && (
@@ -275,7 +269,7 @@ const IndexLayout = () => {
                     )}
                     {state.current === 2 && (
                         <Form ref={formWeblogInfoRef} {...formItemLayout}
-                              onValuesChange={(k: Record<string, string | number>, v: Record<string, string | number>) => setWeblogValue(k, v)}>
+                              onValuesChange={(k: any, v: Record<string, string | number>) => setWeblogValue(k, v)}>
                             <Title level={3}>{getRes().installInputWebSiteInfo}</Title>
                             <FormItem name='username' label={getRes().installAdmin}
                                       rules={[{required: true}]}>

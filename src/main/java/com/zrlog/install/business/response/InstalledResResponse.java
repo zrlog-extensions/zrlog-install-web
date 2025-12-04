@@ -6,6 +6,7 @@ public class InstalledResResponse {
     private String installedTitle;
     private String installedTips;
     private String missingConfigTips;
+    private String lang;
     private Boolean askConfig;
     private String askConfigTips;
     private String installSuccessContent;
@@ -64,5 +65,13 @@ public class InstalledResResponse {
 
     public void setAskConfigTips(String askConfigTips) {
         this.askConfigTips = askConfigTips;
+    }
+
+    public String getLang() {
+        return lang;
+    }
+
+    public void setLang(String lang) {
+        this.lang = lang;
     }
 }

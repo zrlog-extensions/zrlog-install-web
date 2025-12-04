@@ -1,8 +1,9 @@
 import axios from "axios";
 import {Spin, App} from "antd";
 import {useEffect, useState} from "react";
-import {getRes, resourceKey} from "./utils/constants";
+import {getRes} from "./utils/constants";
 import IndexLayout from "./components";
+import {resLoadedBySsr, setRes} from "./index";
 
 axios.defaults.baseURL = document.baseURI;
 
@@ -10,23 +11,8 @@ type AppState = {
     resLoaded: boolean;
 };
 
-const jsonStr = document.getElementById("resourceInfo")?.textContent;
-let _resLoadedBySsr = false;
-
-const setRes = (data: Record<string, unknown>) => {
-    data.copyrightTips =
-        data.copyright + ' <a target="_blank" href="https://blog.zrlog.com/about.html?footer">ZrLog</a>';
-    //@ts-ignore
-    window[resourceKey] = JSON.stringify(data);
-}
-
-if (jsonStr && jsonStr !== "") {
-    setRes(JSON.parse(jsonStr));
-    _resLoadedBySsr = true;
-}
-
 const AppBase = () => {
-    const [appState, setAppState] = useState<AppState>({resLoaded: _resLoadedBySsr});
+    const [appState, setAppState] = useState<AppState>({resLoaded: resLoadedBySsr});
 
     const {modal} = App.useApp();
 

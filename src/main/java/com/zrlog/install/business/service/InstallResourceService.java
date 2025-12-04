@@ -19,6 +19,7 @@ public class InstallResourceService {
     private InstalledResResponse getInstalledResResponse(Map<String, Object> installMap, ServerConfig serverConfig) {
         InstalledResResponse installedResResponse = new InstalledResResponse();
         installedResResponse.setInstalled(true);
+        installedResResponse.setLang((String) installMap.get("lang"));
         if (InstallConstants.installConfig.isContainerMode() && InstallConstants.installConfig.isMissingConfig()) {
             installedResResponse.setAskConfig(true);
             installedResResponse.setInstallSuccessContent(InstallSuccessContentUtils.getContent(InstallConstants.installConfig.getDbPropertiesFile(), true, serverConfig));
@@ -39,6 +40,7 @@ public class InstallResourceService {
     public Object installResourceInfo(HttpRequest request) {
         String lang = InstallConstants.installConfig.getAcceptLanguage();
         Map<String, Object> installMap = new TreeMap<>(InstallI18nUtil.getInstallMap());
+        installMap.put("lang", lang);
         if (InstallConstants.installConfig.getAction().isInstalled()) {
             return getInstalledResResponse(installMap, request.getServerConfig());
         }
