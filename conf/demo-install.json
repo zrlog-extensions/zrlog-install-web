@@ -26,7 +26,11 @@
     "comment_base": "{\"baseUrl\":\"https://faas-demo.zrlog.com\"}",
     "comment_type": "base",
     "comment_plugin_name": "comment",
-    "system_notification": "测试通知"
+    "system_notification": "测试通知",
+    "ai_provider": "DEEP_SEEK",
+    "ai_model": "deepseek-chat",
+    "ai_api_key": "sk-959145871a4a493b940e8a653a70f529",
+    "ai_prompt": "你是一个写作助手，主要按照输出内容尽量通俗易懂，不要过于 AI 的条条框框的那种"
   },
   "contextPath": ""
 }
