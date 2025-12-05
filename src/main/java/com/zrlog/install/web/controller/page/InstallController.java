@@ -6,6 +6,7 @@ import com.hibegin.http.server.api.HttpRequest;
 import com.hibegin.http.server.web.Controller;
 import com.zrlog.install.business.response.InstalledResResponse;
 import com.zrlog.install.business.service.InstallResourceService;
+import com.zrlog.install.web.InstallConstants;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -46,6 +47,11 @@ public class InstallController extends Controller {
             document.title(((InstalledResResponse) stringObjectMap).getInstalledTitle());
         } else {
             document.title(String.valueOf(((Map<String, Object>) stringObjectMap).get("installWizard")));
+        }
+        Element htmlElement = document.selectFirst("html");
+        if (Objects.nonNull(htmlElement)) {
+            String lang = InstallConstants.installConfig.getAcceptLanguage();
+            htmlElement.attr("lang", lang.split("_")[0]);
         }
         Elements favicon = document.head().select("link[rel=shortcut icon]");
         if (!favicon.isEmpty()) {
