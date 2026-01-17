@@ -19,6 +19,7 @@ CREATE TABLE `link`
     `sort`     int(11) DEFAULT NULL,
     `status`   bit(1)       DEFAULT NULL,
     `url`      varchar(255) DEFAULT NULL,
+    `icon`     longtext     DEFAULT NULL,
     PRIMARY KEY (`linkId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -33,6 +34,7 @@ CREATE TABLE `lognav`
     `navName` varchar(32)  DEFAULT NULL,
     `sort`    int(11) DEFAULT NULL,
     `url`     varchar(255) DEFAULT NULL,
+    `icon`    longtext     DEFAULT NULL,
     PRIMARY KEY (`navId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

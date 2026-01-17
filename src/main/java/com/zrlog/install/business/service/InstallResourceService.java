@@ -37,6 +37,19 @@ public class InstallResourceService {
         return installedResResponse;
     }
 
+    private Map<String, Object> fillFeedbackInfo(Map<String, Object> installMap, ServerConfig serverConfig) {
+        Object feedbackRes = installMap.get("installFeedback");
+        if (Objects.isNull(feedbackRes)) {
+            return installMap;
+        }
+        String feedbackUrl = "https://blog.zrlog.com/feedback.html?v=" + Objects.requireNonNullElse(serverConfig.getApplicationVersion(), "3")
+                + "&os=" + System.getProperty("os.name");
+        feedbackRes = feedbackRes.toString()
+                .replace("${feedbackInfo}", "<a target=\"_blank\" href=\"" + feedbackUrl + "\">https://blog.zrlog.com/feedback.html</a>");
+        installMap.put("installFeedback", feedbackRes);
+        return installMap;
+    }
+
     public Object installResourceInfo(HttpRequest request) {
         String lang = InstallConstants.installConfig.getAcceptLanguage();
         Map<String, Object> installMap = new TreeMap<>(InstallI18nUtil.getInstallMap());
@@ -71,6 +84,6 @@ public class InstallResourceService {
         } catch (Exception e) {
             //ignore
         }
-        return installMap;
+        return fillFeedbackInfo(installMap, request.getServerConfig());
     }
 }
