@@ -54,12 +54,12 @@ public class DefaultInstallConfig implements InstallConfig {
 
     @Override
     public String defaultTemplatePath() {
-        return "/include/templates/default";
+        return "/include/templates/hexo-template-fluid";
     }
 
     @Override
     public String getZrLogSqlVersion() {
-        return "19";
+        return "20";
     }
 
     @Override
