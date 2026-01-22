@@ -256,7 +256,7 @@ public class InstallService {
     }
 
     private boolean insertNav(DAO dao) throws SQLException {
-        String insertLogNavSql = "INSERT INTO `lognav`( `navId`,`url`, `navName`,`icon`, `sort`) VALUES (?,?,?,?)";
+        String insertLogNavSql = "INSERT INTO `lognav`( `navId`,`url`, `navName`,`icon`, `sort`) VALUES (?,?,?,?,?)";
         return dao.execute(insertLogNavSql, 1, "/", InstallI18nUtil.getInstallStringFromRes("home"), "iconfont icon-home-fill", 1)
                 && dao.execute(insertLogNavSql, 2, "/admin/login", InstallI18nUtil.getInstallStringFromRes("manage"), "iconfont icon-user-fill", 2);
     }
