@@ -8,8 +8,8 @@ tagName="v${releaseVersion}"
 git add -A
 git commit -m '[shell-release]release version '${releaseVersion}
 git tag ${tagName}
-git push origin ${tagName}
+git push dev ${tagName}
 ./mvnw versions:set -DnewVersion=${nextVersion}
 git add -A
 git commit -m '[shell-release]next version '${nextVersion}
-git push
+git push dev main
