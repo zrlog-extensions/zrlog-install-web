@@ -54,7 +54,7 @@ public class DefaultInstallConfig implements InstallConfig {
 
     @Override
     public String defaultTemplatePath() {
-        return "/include/templates/hexo-template-fluid";
+        return "/include/templates/hexo-theme-fluid";
     }
 
     @Override
