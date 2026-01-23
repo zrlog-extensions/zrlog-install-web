@@ -59,7 +59,7 @@ public class DefaultInstallConfig implements InstallConfig {
 
     @Override
     public String getZrLogSqlVersion() {
-        return "20";
+        return "21";
     }
 
     @Override
