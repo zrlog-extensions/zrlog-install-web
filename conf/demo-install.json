@@ -9,7 +9,7 @@
     "username": "admin",
     "password": "123456",
     "secretKey": "e03ca6df-677a-4bd6-9730-c4dc1e6d3607",
-    "installDate": "2025-01-01 08:00:00 +0800",
+    "installDate": "2026-01-01 08:00:00 +0800",
     "second_title": "基于无服务器架构，使用 Cloudflare D1 存储数据"
   },
   "appendWebsite": {
