@@ -92,7 +92,7 @@ public class ApiInstallController extends Controller {
         if (!new InstallService(installConfig, configVO).install()) {
             throw new InstallException(TestConnectDbResult.UNKNOWN);
         }
-        return new InstallResultResponse(new InstallSuccessData(InstallSuccessContentUtils.getContent(installConfig.getDbPropertiesFile(), installConfig.isContainerMode(), request.getServerConfig())));
+        return new InstallResultResponse(new InstallSuccessData(InstallSuccessContentUtils.getContent(installConfig.getDbPropertiesFile(), installConfig.isAskConfig(), request.getServerConfig())));
     }
 
     @ResponseBody

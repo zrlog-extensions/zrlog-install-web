@@ -20,7 +20,7 @@ public class InstallResourceService {
         InstalledResResponse installedResResponse = new InstalledResResponse();
         installedResResponse.setInstalled(true);
         installedResResponse.setLang((String) installMap.get("lang"));
-        if (InstallConstants.installConfig.isContainerMode() && InstallConstants.installConfig.isMissingConfig()) {
+        if (InstallConstants.installConfig.isAskConfig()) {
             installedResResponse.setAskConfig(true);
             installedResResponse.setInstallSuccessContent(InstallSuccessContentUtils.getContent(InstallConstants.installConfig.getDbPropertiesFile(), true, serverConfig));
             installedResResponse.setMissingConfigTips((String) installMap.get("missingConfigTips"));
@@ -66,7 +66,7 @@ public class InstallResourceService {
         //这个是不需要的
         installMap.remove("installedWarTips");
         installMap.remove("installedTips");
-        installMap.put("askConfig", InstallConstants.installConfig.isContainerMode());
+        installMap.put("askConfig", InstallConstants.installConfig.isAskConfig());
         try (InputStream inputStream = InstallResourceService.class.getResourceAsStream("/i18n/disclaimer-agreement/" + lang + ".md")) {
             if (Objects.nonNull(inputStream)) {
                 installMap.put("disclaimerAgreement", new String(inputStream.readAllBytes()));

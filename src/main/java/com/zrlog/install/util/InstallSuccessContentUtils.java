@@ -43,8 +43,8 @@ public class InstallSuccessContentUtils {
         return "/i18n/installed-docker/zh_CN.md";
     }
 
-    public static String getContent(File dbProperties, boolean containerMode, ServerConfig serverConfig) {
-        if (containerMode) {
+    public static String getContent(File dbProperties, boolean askConfig, ServerConfig serverConfig) {
+        if (askConfig) {
             BasicTemplateRender basicTemplateRender;
             try {
                 basicTemplateRender = new BasicTemplateRender(getInstallInfo(dbProperties, serverConfig), InstallSuccessContentUtils.class);

@@ -31,7 +31,7 @@ public interface InstallConfig {
 
     HttpErrorHandle getErrorHandler();
 
-    boolean isContainerMode();
+    boolean isAskConfig();
 
     boolean isMissingConfig();
 
