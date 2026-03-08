@@ -19,7 +19,7 @@ import Text from "antd/es/typography/Text";
 import {getRes} from "../utils/constants";
 import {mapToQueryString} from "../utils/helpers";
 import DisclaimerAgreement from "./DisclaimerAgreement";
-import UpgradeButtion from './UpgradeButtion';
+import UpgradeButton from './UpgradeButton';
 import InstallSuccessContent from './InstallSuccessContent';
 
 const FormItem = Form.Item;
@@ -210,7 +210,7 @@ const IndexLayout = () => {
                 marginTop: 32, marginBottom: 32, width: "100%",
                 maxWidth: 960
             }}>
-                <UpgradeButtion/>
+                <UpgradeButton/>
                 <div hidden={getRes()['utfTips'] === ''}>
                     <Alert type='error'
                            message={<div

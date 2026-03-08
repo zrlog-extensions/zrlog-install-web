@@ -3,7 +3,7 @@ import Alert from "antd/es/alert";
 import {marked} from "marked";
 import {getRes} from "utils/constants";
 
-const UpgradeButtion = () => {
+const UpgradeButton = () => {
 
     const {modal} = App.useApp()
 
@@ -40,4 +40,4 @@ const UpgradeButtion = () => {
     </div>
 }
 
-export default UpgradeButtion;
+export default UpgradeButton;
