@@ -115,6 +115,15 @@ public class InstallService {
             return TestConnectDbResult.CREATE_CONNECT_ERROR;
         } catch (SQLSyntaxErrorException e) {
             LOGGER.log(Level.SEVERE, "", e);
+            if ("mysql".equals(dbConn.get("dbType")) && e.getMessage() != null && e.getMessage().contains("Unknown database")) {
+                try {
+                    if (createDatabase()) {
+                        return TestConnectDbResult.SUCCESS;
+                    }
+                } catch (Exception createEx) {
+                    LOGGER.log(Level.SEVERE, "auto create database error", createEx);
+                }
+            }
             return TestConnectDbResult.DB_NOT_EXISTS;
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "", e);
@@ -130,6 +139,25 @@ public class InstallService {
             LOGGER.log(Level.SEVERE, "", e);
         }
         return TestConnectDbResult.UNKNOWN;
+    }
+
+    private boolean createDatabase() throws Exception {
+        String dbName = dbConn.get("dbName");
+        String dbHost = dbConn.get("dbHost");
+        String dbPort = dbConn.get("dbPort");
+        String dbType = dbConn.get("dbType");
+        if (StringUtils.isEmpty(dbName) || StringUtils.isEmpty(dbHost) || StringUtils.isEmpty(dbPort)) return false;
+
+        Properties properties = new Properties();
+        properties.putAll(dbConn);
+        String baseJdbcUrl = "jdbc:" + dbType + "://" + dbHost + ":" + dbPort + "/";
+        String jdbcUrlQueryStr = installConfig.getJdbcUrlQueryStr(dbType, Collections.emptyMap());
+        properties.put("jdbcUrl", baseJdbcUrl + (StringUtils.isEmpty(jdbcUrlQueryStr) ? "" : "?" + jdbcUrlQueryStr));
+
+        try (DataSourceWrapperImpl ds = buildDataSource(properties, EnvKit.isDevMode())) {
+             DAO dao = new DAO(ds);
+             return dao.execute("CREATE DATABASE IF NOT EXISTS `" + dbName + "` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+        }
     }
 
 

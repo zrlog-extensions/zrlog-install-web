@@ -65,6 +65,10 @@ public class ApiInstallController extends Controller {
         dbConn.put("user", getRequest().getParaToStr("dbUserName", ""));
         dbConn.put("password", getRequest().getParaToStr("dbPassword", ""));
         String dbType = getRequest().getParaToStr("dbType", "mysql");
+        dbConn.put("dbType", dbType);
+        dbConn.put("dbHost", getRequest().getParaToStr("dbHost"));
+        dbConn.put("dbPort", getRequest().getParaToStr("dbPort"));
+        dbConn.put("dbName", getRequest().getParaToStr("dbName"));
         String jdbcUrl = "jdbc:" + dbType + "://" + getRequest().getParaToStr("dbHost") + ":" + getRequest().getParaToStr("dbPort") + "/" + getRequest().getParaToStr("dbName");
         String jdbcUrlQueryStr = InstallConstants.installConfig.getJdbcUrlQueryStr(dbType, getRequest().getParamMap());
         if (Objects.equals(dbType, "mysql")) {
