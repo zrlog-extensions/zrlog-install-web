@@ -3,10 +3,10 @@ package com.zrlog.install.web.controller.api;
 import com.hibegin.common.dao.DAO;
 import com.hibegin.common.dao.DataSourceWrapper;
 import com.hibegin.common.dao.DataSourceWrapperImpl;
+import com.hibegin.common.dao.SqlConvertUtils;
 import com.hibegin.common.util.IOUtil;
 import com.hibegin.http.server.util.PathUtil;
 import com.hibegin.http.server.web.Controller;
-import com.zrlog.install.util.SqlConvertUtils;
 import com.zrlog.install.web.InstallConstants;
 
 import java.io.File;
@@ -36,7 +36,7 @@ public class ApiMigrateController extends Controller {
         File sqlFile = PathUtil.getConfFile(sqlPath);
         List<String> strings = SqlConvertUtils.doMySQLToSqliteBySqlText(IOUtil.getStringInputStream(new FileInputStream(sqlFile)));
         StringJoiner stringJoiner = new StringJoiner(";\n");
-        strings.forEach(stringJoiner::add);
+        strings.stream().filter(sql -> !isBatchDropTableSql(sql)).forEach(stringJoiner::add);
         IOUtil.writeStrToFile(stringJoiner.toString(), PathUtil.getConfFile("sqlite.sql"));
     }
 
@@ -51,6 +51,9 @@ public class ApiMigrateController extends Controller {
             DAO dao = new DAO(dataSourceWrapper);
             for (String sql : SqlConvertUtils.extractExecutableSqlByInputStream(new FileInputStream(sqlFile))) {
                 try {
+                    if (isBatchDropTableSql(sql)) {
+                        continue;
+                    }
                     if (sql.startsWith("INSERT INTO")) {
                         List<Object> values = SqlConvertUtils.extractValues(sql);
                         // 构造带 ? 占位符的 SQL
@@ -66,5 +69,10 @@ public class ApiMigrateController extends Controller {
             }
         }
         response.renderJson(new HashMap<>());
+    }
+
+    private static boolean isBatchDropTableSql(String sql) {
+        String trimSql = sql.trim().toUpperCase();
+        return trimSql.startsWith("DROP TABLE IF EXISTS") && trimSql.contains(",");
     }
 }

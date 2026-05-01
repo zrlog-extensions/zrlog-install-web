@@ -4,7 +4,7 @@
 
 /*!40101 SET NAMES utf8 */;
 
-DROP TABLE IF EXISTS `comment`, `link`, `log`, `lognav`, `plugin`, `tag`, `type`, `user`, `website`;
+DROP TABLE IF EXISTS `comment`, `link`, `log`, `log_version`, `lognav`, `plugin`, `tag`, `type`, `user`, `website`;
 
 #
 # Structure for table "link"
@@ -168,6 +168,27 @@ CREATE TABLE `comment`
     UNIQUE KEY `postId` (`postId`),
     KEY           `logId` (`logId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+#
+# Structure for table "log_version"
+#
+
+DROP TABLE IF EXISTS `log_version`;
+CREATE TABLE `log_version`
+(
+    `id`              int(11) NOT NULL AUTO_INCREMENT,
+    `log_id`          int(11) NOT NULL,
+    `article_version` int(11) NOT NULL,
+    `from_version`    int(11) NOT NULL,
+    `patch_json`      longtext,
+    `title`           varchar(255) DEFAULT NULL,
+    `user_id`         int(11) DEFAULT NULL,
+    `created_at`      datetime     DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `log_id_article_version` (`log_id`, `article_version`),
+    KEY               `log_id` (`log_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 
 #

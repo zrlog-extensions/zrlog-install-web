@@ -2,6 +2,7 @@ package com.zrlog.install.business.service;
 
 import com.hibegin.common.dao.DAO;
 import com.hibegin.common.dao.DataSourceWrapperImpl;
+import com.hibegin.common.dao.SqlConvertUtils;
 import com.hibegin.common.util.EnvKit;
 import com.hibegin.common.util.IOUtil;
 import com.hibegin.common.util.LoggerUtil;
@@ -9,7 +10,6 @@ import com.hibegin.template.BasicTemplateRender;
 import com.zrlog.install.business.type.TestConnectDbResult;
 import com.zrlog.install.business.vo.InstallConfigVO;
 import com.zrlog.install.util.InstallI18nUtil;
-import com.zrlog.install.util.SqlConvertUtils;
 import com.zrlog.install.util.StringUtils;
 import com.zrlog.install.web.InstallAction;
 import com.zrlog.install.web.config.InstallConfig;
@@ -200,6 +200,9 @@ public class InstallService {
                 sqlList = SqlConvertUtils.extractExecutableSql(sql);
             }
             for (String sqlSt : sqlList) {
+                if (isBatchDropTableSql(sqlSt)) {
+                    continue;
+                }
                 dao.execute(sqlSt);
             }
             List<Boolean> results = new ArrayList<>();
@@ -227,6 +230,11 @@ public class InstallService {
             return "";
         }
         return Jsoup.parse(content).body().text();
+    }
+
+    private static boolean isBatchDropTableSql(String sql) {
+        String trimSql = sql.trim().toUpperCase(Locale.ROOT);
+        return trimSql.startsWith("DROP TABLE IF EXISTS") && trimSql.contains(",");
     }
 
     private boolean insertFirstArticle(DAO dao) throws Exception {
