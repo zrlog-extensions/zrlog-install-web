@@ -102,6 +102,8 @@ CREATE TABLE `user`
     `userName`  varchar(16)   DEFAULT NULL,
     `header`    varchar(255)  DEFAULT NULL,
     `secretKey` varchar(1024) DEFAULT NULL COMMENT '密钥',
+    `mfaEnabled` bit(1) DEFAULT b'0' COMMENT '是否启用 MFA',
+    `mfaSecret` varchar(128) DEFAULT NULL COMMENT 'MFA 密钥',
     PRIMARY KEY (`userId`),
     UNIQUE KEY `userName` (`userName`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
