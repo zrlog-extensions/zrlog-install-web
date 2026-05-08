@@ -1,5 +1,6 @@
 package com.zrlog.install.web.config;
 
+import com.hibegin.common.util.PasswordHashUtils;
 import com.hibegin.http.server.api.HttpErrorHandle;
 import com.hibegin.http.server.util.PathUtil;
 import com.zrlog.install.business.response.LastVersionInfo;
@@ -31,7 +32,7 @@ public class DefaultInstallConfig implements InstallConfig {
 
     @Override
     public String encryptPassword(String password) {
-        return md5(password);
+        return PasswordHashUtils.hash(md5(password));
     }
 
     private static String md5(String input) {
