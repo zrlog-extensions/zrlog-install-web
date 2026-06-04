@@ -2,6 +2,7 @@ package com.zrlog.install;
 
 import com.google.gson.Gson;
 import com.hibegin.common.util.IOUtil;
+import com.hibegin.common.util.LoggerUtil;
 import com.hibegin.http.server.WebServerBuilder;
 import com.hibegin.http.server.util.PathUtil;
 import com.zrlog.install.business.service.InstallService;
@@ -12,8 +13,11 @@ import com.zrlog.install.web.config.InstallServerConfig;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.logging.Logger;
 
 public class Application {
+
+    private static final Logger LOGGER = LoggerUtil.getLogger(Application.class);
 
     static {
         System.getProperties().put("sws.run.mode", "dev");
@@ -32,7 +36,7 @@ public class Application {
                 InstallConfigVO config = new Gson().fromJson(jsonStr, InstallConfigVO.class);
                 InstallService installService = new InstallService(InstallConstants.installConfig, config);
                 boolean install = installService.install();
-                System.out.println("installed = " + install);
+                LOGGER.info("Installed = " + install);
                 System.exit(install ? 0 : 1);
                 return;
             }
