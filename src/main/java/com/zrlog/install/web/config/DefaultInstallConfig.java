@@ -6,6 +6,7 @@ import com.hibegin.http.server.util.PathUtil;
 import com.zrlog.install.business.response.LastVersionInfo;
 import com.zrlog.install.exception.AbstractInstallException;
 import com.zrlog.install.web.InstallAction;
+import com.hibegin.common.util.LoggerUtil;
 
 import java.io.File;
 import java.security.MessageDigest;
@@ -13,8 +14,12 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class DefaultInstallConfig implements InstallConfig {
+    private static final Logger LOGGER = LoggerUtil.getLogger(DefaultInstallConfig.class);
+
     @Override
     public InstallAction getAction() {
         return new DefaultInstallAction();
@@ -103,7 +108,7 @@ public class DefaultInstallConfig implements InstallConfig {
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", 9999);
                 error.put("message", e.getMessage());
-                e.printStackTrace();
+                LOGGER.log(Level.SEVERE, "Install request failed", e);
                 response.renderJson(error);
             }
         };

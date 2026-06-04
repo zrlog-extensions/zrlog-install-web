@@ -5,6 +5,7 @@ import com.hibegin.common.dao.DataSourceWrapper;
 import com.hibegin.common.dao.DataSourceWrapperImpl;
 import com.hibegin.common.dao.SqlConvertUtils;
 import com.hibegin.common.util.IOUtil;
+import com.hibegin.common.util.LoggerUtil;
 import com.hibegin.http.server.util.PathUtil;
 import com.hibegin.http.server.web.Controller;
 import com.zrlog.install.web.InstallConstants;
@@ -16,8 +17,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 import java.util.StringJoiner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ApiMigrateController extends Controller {
+
+    private static final Logger LOGGER = LoggerUtil.getLogger(ApiMigrateController.class);
 
     public void convertToSqliteSqlFile() throws FileNotFoundException {
         doConvert();
@@ -64,7 +69,7 @@ public class ApiMigrateController extends Controller {
                     }
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LOGGER.log(Level.WARNING, "Import sqlite sql failed: " + sql, e);
                 }
             }
         }
