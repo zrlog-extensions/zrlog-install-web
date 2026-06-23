@@ -18,8 +18,6 @@ public class InstallNativeImageResourceUtils {
 
     public static void reg() {
         List<String> resourceNameList = new ArrayList<>();
-        resourceNameList.add("/i18n/disclaimer-agreement/en_US.md");
-        resourceNameList.add("/i18n/disclaimer-agreement/zh_CN.md");
         resourceNameList.add("/i18n/init-blog/en_US.md");
         resourceNameList.add("/i18n/init-blog/en_US.html");
         resourceNameList.add("/i18n/init-blog/zh_CN.md");
@@ -43,6 +41,8 @@ public class InstallNativeImageResourceUtils {
         NativeImageUtils.gsonNativeAgentByClazz(Arrays.asList(InstalledResResponse.class,
                 LastVersionInfo.class, InstallResultResponse.class,
                 TestConnectResponse.class, InstallResourceResponse.class,
+                InstallRuntimeResourceResponse.class, InstallProbeResponse.class,
+                InstallProbeData.class, InstallProbeItem.class, InstallProgressEvent.class,
                 //vo
                 InstallConfigVO.class, InstallSuccessData.class));
     }

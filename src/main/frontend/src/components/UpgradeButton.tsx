@@ -1,16 +1,17 @@
 import {App, Button, Divider, Space, Typography} from "antd";
 import Alert from "antd/es/alert";
 import {marked} from "marked";
-import {getRes} from "utils/constants";
+import {formatText, getRes} from "utils/constants";
 
 const UpgradeButton = () => {
 
     const {modal} = App.useApp()
 
 
-    const tips = getRes()['upgradeTips'];
+    const res = getRes();
+    const upgradeVersion = res.upgradeVersion;
 
-    if (tips === "") {
+    if (!upgradeVersion) {
         return <></>
     }
 
@@ -21,20 +22,20 @@ const UpgradeButton = () => {
                        <Button size={"middle"} type="default" onClick={() => {
                            modal.info({
                                width: 682,
-                               title: getRes()['newVersion'],
+                               title: res.upgrade.newVersion,
                                content: <Typography
-                                   dangerouslySetInnerHTML={{__html: marked(getRes()['upgradeChangeLog']) as string}}/>,
+                                   dangerouslySetInnerHTML={{__html: marked(res.upgradeChangeLog || "") as string}}/>,
                            })
                        }}>
-                           {getRes()['detail']}
+                           {res.common.detail}
                        </Button>
-                       <Button size={"middle"} type="primary" href={getRes()['upgradeDownloadUrl']}>
-                           {getRes()['download']}
+                       <Button size={"middle"} type="primary" href={res.upgradeDownloadUrl}>
+                           {res.common.download}
                        </Button>
                    </Space.Compact>
                }
                message={<div
-                   dangerouslySetInnerHTML={{__html: getRes()['upgradeTips']}}/>}
+                   dangerouslySetInnerHTML={{__html: formatText(res.upgrade.newVersionTip, {version: upgradeVersion})}}/>}
                showIcon/>
         <Divider/>
     </div>

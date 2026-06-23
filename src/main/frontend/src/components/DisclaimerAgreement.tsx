@@ -6,7 +6,7 @@ import {marked} from 'marked';
 const DisclaimerAgreement: React.FC = () => {
     return (
         <Card styles={{body: {maxHeight: 400, overflowY: "auto", paddingTop: 0}}}>
-            <Typography dangerouslySetInnerHTML={{__html: marked(getRes()['disclaimerAgreement']) as string}}/>
+            <Typography dangerouslySetInnerHTML={{__html: marked(getRes().agreement.content) as string}}/>
         </Card>
     );
 };

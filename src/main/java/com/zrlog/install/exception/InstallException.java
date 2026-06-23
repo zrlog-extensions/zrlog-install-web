@@ -3,7 +3,7 @@ package com.zrlog.install.exception;
 import com.zrlog.install.business.type.TestConnectDbResult;
 import com.zrlog.install.util.InstallI18nUtil;
 
-public class InstallException extends AbstractInstallException {
+public class InstallException extends AbstractInstallException implements InstallErrorCodeProvider {
 
     private final TestConnectDbResult result;
 
@@ -19,5 +19,10 @@ public class InstallException extends AbstractInstallException {
     @Override
     public String getMessage() {
         return "[Error-" + result + "] - " + InstallI18nUtil.getInstallStringFromRes("connectDbError_" + result.getError());
+    }
+
+    @Override
+    public String getCode() {
+        return result.name();
     }
 }

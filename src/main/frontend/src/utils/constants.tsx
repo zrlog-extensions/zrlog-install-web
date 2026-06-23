@@ -1,6 +1,8 @@
 // eslint-disable-next-line no-unused-vars
 // @ts-ignore
 import {createBrowserHistory, History} from "history";
+import type {InstallI18nResource, InstallLang} from "../i18n/install";
+import {getInstallI18n, normalizeInstallLang} from "../i18n/install";
 
 const history = createBrowserHistory();
 
@@ -14,9 +16,31 @@ class Constants {
     }
 }
 
-export const resourceKey: string = "installRes.v5";
+export type InstallRuntimeResourceInfo = {
+    installed?: boolean;
+    askConfig?: boolean;
+    missingConfig?: boolean;
+    warMode?: boolean;
+    lang?: InstallLang;
+    currentVersion?: string;
+    installSuccessContent?: string;
+    upgradeVersion?: string;
+    upgradeChangeLog?: string;
+    upgradeDownloadUrl?: string;
+    feedbackUrl?: string;
+    charset?: string;
+    runtimeMode?: string;
+    dbPropertiesPath?: string;
+    lockFilePath?: string;
+};
 
-export const getRes = (): Record<string, never> => {
+export type InstallResourceInfo = InstallI18nResource & InstallRuntimeResourceInfo & {
+    copyrightTips: string;
+};
+
+export const resourceKey: string = "installRuntime.v6";
+
+const getRuntimeResource = (): InstallRuntimeResourceInfo => {
     if (typeof window === 'undefined') {
         return {}
     }
@@ -26,6 +50,26 @@ export const getRes = (): Record<string, never> => {
         return {};
     }
     return JSON.parse(cacheRes);
+};
+
+export const hasRuntimeResource = (): boolean => {
+    return Object.keys(getRuntimeResource()).length > 0;
+};
+
+export const getRes = (): InstallResourceInfo => {
+    const runtimeRes = getRuntimeResource();
+    const lang = normalizeInstallLang(runtimeRes.lang);
+    return {
+        ...getInstallI18n(lang),
+        ...runtimeRes,
+        copyrightTips: `${getInstallI18n(lang).copyright} <a target="_blank" href="https://blog.zrlog.com/about.html?footer">ZrLog</a>`,
+    };
+};
+
+export const formatText = (template: string, values: Record<string, string | number | undefined>) => {
+    return Object.entries(values).reduce((text, [key, value]) => {
+        return text.split(`{${key}}`).join(value === undefined ? "" : `${value}`);
+    }, template);
 };
 
 export default Constants;

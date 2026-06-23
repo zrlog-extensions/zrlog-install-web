@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.hibegin.common.util.IOUtil;
 import com.hibegin.http.server.api.HttpRequest;
 import com.hibegin.http.server.web.Controller;
-import com.zrlog.install.business.response.InstalledResResponse;
 import com.zrlog.install.business.service.InstallResourceService;
 import com.zrlog.install.web.InstallConstants;
 import org.jsoup.Jsoup;
@@ -13,7 +12,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.InputStream;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -43,11 +41,7 @@ public class InstallController extends Controller {
         Objects.requireNonNull(document.selectFirst("base")).attr("href", request.getContextPath() + "/");
         Object stringObjectMap = new InstallResourceService().installResourceInfo(getRequest());
         Objects.requireNonNull(document.getElementById("resourceInfo")).text(new Gson().toJson(stringObjectMap));
-        if (stringObjectMap instanceof InstalledResResponse) {
-            document.title(((InstalledResResponse) stringObjectMap).getInstalledTitle());
-        } else {
-            document.title(String.valueOf(((Map<String, Object>) stringObjectMap).get("installWizard")));
-        }
+        document.title("ZrLog - Install");
         Element htmlElement = document.selectFirst("html");
         if (Objects.nonNull(htmlElement)) {
             String lang = InstallConstants.installConfig.getAcceptLanguage();

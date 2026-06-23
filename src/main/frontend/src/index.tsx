@@ -15,8 +15,6 @@ const jsonStr = document.getElementById("resourceInfo")?.textContent;
 export let resLoadedBySsr = false;
 
 export const setRes = (data: Record<string, unknown>) => {
-    data.copyrightTips =
-        data.copyright + ' <a target="_blank" href="https://blog.zrlog.com/about.html?footer">ZrLog</a>';
     //@ts-ignore
     window[resourceKey] = JSON.stringify(data);
 }
@@ -25,7 +23,7 @@ let lang = "zh_CN";
 
 if (jsonStr && jsonStr !== "") {
     setRes(JSON.parse(jsonStr));
-    lang = getRes()['lang']
+    lang = getRes().lang || "zh_CN"
     resLoadedBySsr = true;
 }
 
@@ -38,7 +36,6 @@ const Index = () => {
 
         mediaQuery.addEventListener('change', changeHandler);
 
-        // 在组件卸载时移除事件监听器
         return () => mediaQuery.removeEventListener('change', changeHandler);
     }, []);
 

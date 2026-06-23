@@ -11,6 +11,6 @@ export const mapToQueryString = (map: Record<string, string | boolean | number |
     }, []).join('&');
 }
 
-export const reloadTitle = (secondTitle: string, res: Record<string, never>) => {
+export const reloadTitle = (secondTitle: string, res: Record<string, unknown>) => {
     document.title = [secondTitle, res['admin.management'], res.websiteTitle].filter(Boolean).join(" | ");
 }

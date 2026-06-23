@@ -1,7 +1,7 @@
 import axios from "axios";
 import {Spin, App} from "antd";
 import {useEffect, useState} from "react";
-import {getRes} from "./utils/constants";
+import {getRes, hasRuntimeResource} from "./utils/constants";
 import IndexLayout from "./components";
 import {resLoadedBySsr, setRes} from "./index";
 
@@ -26,18 +26,17 @@ const AppBase = () => {
             })
             .catch((error: any) => {
                 modal.error({
-                    title: "Load error",
+                    title: getRes().error.requestError,
                     content: (
                         <div style={{paddingTop: 20}} dangerouslySetInnerHTML={{__html: error.response.data}}/>
                     ),
-                    okText: "确认",
+                    okText: getRes().common.confirm,
                 });
             });
     };
 
     const initRes = () => {
-        const resourceData = getRes();
-        if (Object.keys(resourceData).length !== 0) {
+        if (hasRuntimeResource()) {
             return;
         }
         loadResourceFromServer();

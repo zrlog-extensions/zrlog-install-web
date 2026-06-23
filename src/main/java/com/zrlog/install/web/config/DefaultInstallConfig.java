@@ -5,6 +5,7 @@ import com.hibegin.http.server.api.HttpErrorHandle;
 import com.hibegin.http.server.util.PathUtil;
 import com.zrlog.install.business.response.LastVersionInfo;
 import com.zrlog.install.exception.AbstractInstallException;
+import com.zrlog.install.exception.InstallErrorCodeProvider;
 import com.zrlog.install.web.InstallAction;
 import com.hibegin.common.util.LoggerUtil;
 
@@ -103,6 +104,9 @@ public class DefaultInstallConfig implements InstallConfig {
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", ee.getError());
                 error.put("message", ee.getMessage());
+                if (ee instanceof InstallErrorCodeProvider) {
+                    error.put("code", ((InstallErrorCodeProvider) ee).getCode());
+                }
                 response.renderJson(error);
             } else {
                 Map<String, Object> error = new HashMap<>();

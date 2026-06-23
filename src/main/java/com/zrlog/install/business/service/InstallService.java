@@ -7,6 +7,7 @@ import com.hibegin.common.util.EnvKit;
 import com.hibegin.common.util.IOUtil;
 import com.hibegin.common.util.LoggerUtil;
 import com.hibegin.template.BasicTemplateRender;
+import com.zrlog.install.business.response.InstallProgressEvent;
 import com.zrlog.install.business.type.TestConnectDbResult;
 import com.zrlog.install.business.vo.InstallConfigVO;
 import com.zrlog.install.util.InstallI18nUtil;
@@ -39,14 +40,21 @@ public class InstallService {
     private final InstallAction installAction;
     private final InstallConfig installConfig;
     private final String contextPath;
+    private final InstallProgressListener progressListener;
 
     public InstallService(InstallConfig installConfig, InstallConfigVO installConfigVO) {
+        this(installConfig, installConfigVO, InstallProgressListener.NONE);
+    }
+
+    public InstallService(InstallConfig installConfig, InstallConfigVO installConfigVO,
+                          InstallProgressListener progressListener) {
         this.dbConn = installConfigVO.getDbConfig();
         this.configMsg = installConfigVO.getConfigMsg();
         this.appendWebsite = installConfigVO.getAppendWebsite();
         this.installAction = installConfig.getAction();
         this.installConfig = installConfig;
         this.contextPath = Objects.requireNonNullElse(installConfigVO.getContextPath(), "");
+        this.progressListener = Objects.requireNonNullElse(progressListener, InstallProgressListener.NONE);
     }
 
     /**
@@ -187,42 +195,121 @@ public class InstallService {
     }
 
     private boolean startInstall(Map<String, String> dbConn, Map<String, String> blogMsg) {
+        String currentStep = "preflight";
         Properties properties = new Properties();
         properties.putAll(dbConn);
         //
-        try (DataSourceWrapperImpl ds = buildDataSource(properties, EnvKit.isDevMode())) {
-            DAO dao = new DAO(ds);
-            String sql = IOUtil.getStringInputStream(InstallService.class.getResourceAsStream("/init-table-structure.sql"));
-            List<String> sqlList;
-            if (ds.isWebApi()) {
-                sqlList = SqlConvertUtils.doMySQLToSqliteBySqlText(sql);
-            } else {
-                sqlList = SqlConvertUtils.extractExecutableSql(sql);
-            }
-            for (String sqlSt : sqlList) {
-                if (isBatchDropTableSql(sqlSt)) {
-                    continue;
+        try {
+            emitRunning(currentStep);
+            new InstallPreflightService().assertReady(installConfig);
+            emitComplete(currentStep);
+
+            currentStep = "database";
+            emitRunning(currentStep);
+            try (DataSourceWrapperImpl ds = buildDataSource(properties, EnvKit.isDevMode())) {
+                ds.testConnection();
+                emitComplete(currentStep);
+
+                DAO dao = new DAO(ds);
+                String sql = IOUtil.getStringInputStream(InstallService.class.getResourceAsStream("/init-table-structure.sql"));
+                List<String> sqlList;
+                if (ds.isWebApi()) {
+                    sqlList = SqlConvertUtils.doMySQLToSqliteBySqlText(sql);
+                } else {
+                    sqlList = SqlConvertUtils.extractExecutableSql(sql);
                 }
-                dao.execute(sqlSt);
-            }
-            List<Boolean> results = new ArrayList<>();
-            //初始数据
-            results.add(initWebSite(dao));
-            results.add(initUser(blogMsg, dao));
-            results.add(insertNav(dao));
-            results.add(initPlugin(dao));
-            results.add(insertType(dao));
-            results.add(insertTag(dao));
-            results.add(insertFirstArticle(dao));
-            if (results.stream().allMatch(e -> Objects.equals(e, true))) {
+                currentStep = "schema";
+                emitRunning(currentStep);
+                for (String sqlSt : sqlList) {
+                    if (isBatchDropTableSql(sqlSt)) {
+                        continue;
+                    }
+                    dao.execute(sqlSt);
+                }
+                emitComplete(currentStep);
+
+                currentStep = "seed-website";
+                emitRunning(currentStep);
+                List<Boolean> results = new ArrayList<>();
+                boolean websiteResult = initWebSite(dao);
+                results.add(websiteResult);
+                String failedStep = websiteResult ? null : currentStep;
+                if (websiteResult) {
+                    emitComplete(currentStep);
+                }
+
+                currentStep = "seed-admin";
+                emitRunning(currentStep);
+                boolean adminResult = initUser(blogMsg, dao);
+                results.add(adminResult);
+                if (!adminResult && failedStep == null) {
+                    failedStep = currentStep;
+                }
+                if (adminResult) {
+                    emitComplete(currentStep);
+                }
+
+                currentStep = "seed-defaults";
+                emitRunning(currentStep);
+                List<Boolean> defaultResults = new ArrayList<>();
+                defaultResults.add(insertNav(dao));
+                defaultResults.add(initPlugin(dao));
+                defaultResults.add(insertType(dao));
+                defaultResults.add(insertTag(dao));
+                defaultResults.add(insertFirstArticle(dao));
+                results.addAll(defaultResults);
+                boolean defaultsResult = defaultResults.stream().allMatch(e -> Objects.equals(e, true));
+                if (!defaultsResult && failedStep == null) {
+                    failedStep = currentStep;
+                }
+                if (defaultsResult) {
+                    emitComplete(currentStep);
+                }
+
+                if (!results.stream().allMatch(e -> Objects.equals(e, true))) {
+                    currentStep = Objects.requireNonNullElse(failedStep, "install");
+                    emitError(currentStep, new IllegalStateException("Install step failed: " + currentStep));
+                    return false;
+                }
+
+                currentStep = "config";
+                emitRunning(currentStep);
                 installSuccess();
-                return true;
+                emitComplete(currentStep);
             }
-            return false;
+            return true;
         } catch (Exception e) {
+            emitError(currentStep, e);
             LOGGER.log(Level.SEVERE, "install error ", e);
         }
         return false;
+    }
+
+    private void emitRunning(String code) throws Exception {
+        progressListener.onProgress(InstallProgressEvent.running(code));
+    }
+
+    private void emitComplete(String code) throws Exception {
+        progressListener.onProgress(InstallProgressEvent.complete(code));
+    }
+
+    private void emitError(String code, Exception e) {
+        try {
+            progressListener.onProgress(InstallProgressEvent.error(code, sanitizeError(e)));
+        } catch (Exception ignored) {
+            // Client connection may already be closed.
+        }
+    }
+
+    private String sanitizeError(Exception e) {
+        if (e.getMessage() == null || e.getMessage().trim().isEmpty()) {
+            return e.getClass().getSimpleName();
+        }
+        String firstLine = e.getMessage().split("\\R", 2)[0].trim();
+        if (firstLine.length() > 180) {
+            return firstLine.substring(0, 180);
+        }
+        return firstLine;
     }
 
     private static String getPlainSearchText(String content) {

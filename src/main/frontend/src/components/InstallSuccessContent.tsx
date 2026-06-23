@@ -11,7 +11,7 @@ const InstallSuccessContent = ({content, askConfig}: {
 
     const [messageApi, contextHolder] = message.useMessage({maxCount: 3});
 
-    if (!askConfig && getRes()['installed']) {
+    if (!askConfig && getRes().installed) {
         return <></>
     }
 
@@ -20,20 +20,20 @@ const InstallSuccessContent = ({content, askConfig}: {
             return <Button onClick={() => {
                 axios.get("/api/install/installResource").then(({data}) => {
                     if (data.data.askConfig) {
-                        messageApi.error(data.data.missingConfigTips);
+                        messageApi.error(getRes().installedPage.missingConfigTips);
                     } else {
                         window.location.href = document.baseURI;
                     }
                 })
-            }} size={"large"} type={"link"}>{getRes()['askConfigTips']}</Button>
+            }} size={"large"} type={"link"}>{getRes().installedPage.askConfigTips}</Button>
         }
-        return <Button href={document.baseURI} size={"large"} type={"link"}>{getRes().installSuccessView}</Button>
+        return <Button href={document.baseURI} size={"large"} type={"link"}>{getRes().success.viewSite}</Button>
     }
 
 
     return <>
         {contextHolder}
-        {!askConfig && <Title level={3} type='success'>{getRes().installSuccess}</Title>}
+        {!askConfig && <Title level={3} type='success'>{getRes().success.installSuccess}</Title>}
         {(content && content.length > 0) && (
             <Card style={{
                 marginTop: 16,
@@ -45,7 +45,7 @@ const InstallSuccessContent = ({content, askConfig}: {
                 body: {
                     paddingTop: 0,
                 }
-            }} title={getRes().installedTitle}>
+            }} title={askConfig ? getRes().success.askConfigTitle : getRes().installedPage.title}>
                 <Typography
                     style={{textAlign: "left"}}
                     dangerouslySetInnerHTML={{__html: marked(content) as string}}/>
