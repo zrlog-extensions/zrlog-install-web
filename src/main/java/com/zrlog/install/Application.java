@@ -26,6 +26,16 @@ public class Application {
     public static void main(String[] args) throws FileNotFoundException {
         System.getProperties().put("java.util.logging.SimpleFormatter.format", "%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS %4$s %5$s%6$s%n");
         PathUtil.setRootPath(System.getProperty("user.dir"));
+        Integer installExitCode = installFromConfigFile(args);
+        if (installExitCode != null) {
+            System.exit(installExitCode);
+            return;
+        }
+        WebServerBuilder builder = new WebServerBuilder.Builder().config(new InstallServerConfig()).build();
+        builder.start();
+    }
+
+    static Integer installFromConfigFile(String[] args) throws FileNotFoundException {
         if (args.length >= 1) {
             File configFile = new File(args[0]);
             if (configFile.exists()) {
@@ -37,11 +47,9 @@ public class Application {
                 InstallService installService = new InstallService(InstallConstants.installConfig, config);
                 boolean install = installService.install();
                 LOGGER.info("Installed = " + install);
-                System.exit(install ? 0 : 1);
-                return;
+                return install ? 0 : 1;
             }
         }
-        WebServerBuilder builder = new WebServerBuilder.Builder().config(new InstallServerConfig()).build();
-        builder.start();
+        return null;
     }
 }

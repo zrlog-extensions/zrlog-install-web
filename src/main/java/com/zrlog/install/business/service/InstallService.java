@@ -95,6 +95,9 @@ public class InstallService {
         DataSourceWrapperImpl dataSource = new DataSourceWrapperImpl(dbProperties, dev);
         if (!dataSource.isWebApi()) {
             String driverClass = dbProperties.getProperty("driverClass");
+            if (StringUtils.isEmpty(driverClass)) {
+                throw new ClassNotFoundException("Missing JDBC driverClass");
+            }
             Class.forName(driverClass);
             dataSource.setDriverClassName(driverClass);
             dataSource.setJdbcUrl(dbProperties.getProperty("jdbcUrl"));
@@ -217,6 +220,9 @@ public class InstallService {
                     sqlList = SqlConvertUtils.doMySQLToSqliteBySqlText(sql);
                 } else {
                     sqlList = SqlConvertUtils.extractExecutableSql(sql);
+                    if (shouldNormalizeInstallSqlForH2()) {
+                        sqlList = normalizeInstallSqlForH2(sqlList);
+                    }
                 }
                 currentStep = "schema";
                 emitRunning(currentStep);
@@ -322,6 +328,27 @@ public class InstallService {
     private static boolean isBatchDropTableSql(String sql) {
         String trimSql = sql.trim().toUpperCase(Locale.ROOT);
         return trimSql.startsWith("DROP TABLE IF EXISTS") && trimSql.contains(",");
+    }
+
+    private boolean shouldNormalizeInstallSqlForH2() {
+        return "h2".equalsIgnoreCase(dbConn.get("dbType"))
+                || "org.h2.Driver".equals(dbConn.get("driverClass"));
+    }
+
+    private static List<String> normalizeInstallSqlForH2(List<String> sqlList) {
+        List<String> normalizedList = new ArrayList<>();
+        for (String sql : sqlList) {
+            normalizedList.add(sql
+                    .replaceAll("(?i)UNIQUE\\s+KEY\\s+`[^`]+`\\s*\\(", "UNIQUE (")
+                    .replaceAll("(?i)KEY\\s+`[^`]+`\\s*\\(", "INDEX (")
+                    .replaceAll("(?i)\\s+COMMENT\\s+'[^']*'", "")
+                    .replace("bit(1)", "boolean")
+                    .replace("DEFAULT b'0'", "DEFAULT false")
+                    .replace("DEFAULT b'1'", "DEFAULT true")
+                    .replaceAll("(?i)\\)\\s*ENGINE\\s*=\\s*InnoDB\\s+DEFAULT\\s+CHARSET\\s*=\\s*[^\\s;]+"
+                            + "(?:\\s+COLLATE\\s+[^\\s;]+)?", ")"));
+        }
+        return normalizedList;
     }
 
     private boolean insertFirstArticle(DAO dao) throws Exception {

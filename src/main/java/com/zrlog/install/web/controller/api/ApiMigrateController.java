@@ -53,6 +53,13 @@ public class ApiMigrateController extends Controller {
         Properties properties = new Properties();
         properties.load(new FileInputStream(PathUtil.getConfFile("sqlite-db.properties")));
         try (DataSourceWrapper dataSourceWrapper = new DataSourceWrapperImpl(properties, false)) {
+            if (dataSourceWrapper instanceof DataSourceWrapperImpl && !dataSourceWrapper.isWebApi()) {
+                DataSourceWrapperImpl dataSource = (DataSourceWrapperImpl) dataSourceWrapper;
+                dataSource.setDriverClassName(properties.getProperty("driverClass"));
+                dataSource.setJdbcUrl(properties.getProperty("jdbcUrl"));
+                dataSource.setUsername(properties.getProperty("user"));
+                dataSource.setPassword(properties.getProperty("password"));
+            }
             DAO dao = new DAO(dataSourceWrapper);
             for (String sql : SqlConvertUtils.extractExecutableSqlByInputStream(new FileInputStream(sqlFile))) {
                 try {
