@@ -57,7 +57,7 @@ jobs:
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
 
-      - name: Build and Deploy to OSSRH
+      - name: Build and Deploy to Maven Central
         run: |
           bash -e shell/install-compile-frontend.sh
           ./mvnw -U clean deploy -s $GITHUB_WORKSPACE/settings.xml -Dmaven.test.skip=false -DskipTests=false -Dgpg.passphrase=${{ secrets.GPG_PASSPHRASE }}
