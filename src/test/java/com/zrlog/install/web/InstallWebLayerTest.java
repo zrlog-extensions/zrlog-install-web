@@ -1,5 +1,6 @@
 package com.zrlog.install.web;
 
+import com.hibegin.common.dao.InMemoryDatabase;
 import com.hibegin.http.HttpMethod;
 import com.hibegin.http.server.api.HttpRequest;
 import com.hibegin.http.server.api.HttpResponse;
@@ -363,8 +364,7 @@ public class InstallWebLayerTest {
     public void shouldImportConvertedSqlIntoConfiguredInMemoryDatabase() throws Exception {
         Path confPath = Files.createTempDirectory("zrlog-install-migrate-import");
         String previousConfPath = System.getProperty("sws.conf.path");
-        String jdbcUrl = "jdbc:h2:mem:zrlog_install_migrate_" + UUID.randomUUID()
-                + ";MODE=MySQL;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1";
+        String jdbcUrl = InMemoryDatabase.h2JdbcUrl("zrlog_install_migrate_" + UUID.randomUUID());
         try {
             System.setProperty("sws.conf.path", confPath.toString());
             Files.writeString(confPath.resolve("mysql.sql"), ""
@@ -373,7 +373,7 @@ public class InstallWebLayerTest {
                     + "INSERT INTO `log` VALUES (1,'hello');\n"
                     + "INSERT INTO `log` VALUES (2,'world');\n");
             Files.writeString(confPath.resolve("sqlite-db.properties"), ""
-                    + "driverClass=org.h2.Driver\n"
+                    + "driverClass=" + InMemoryDatabase.H2_DRIVER_CLASS + "\n"
                     + "jdbcUrl=" + jdbcUrl + "\n"
                     + "user=sa\n"
                     + "password=\n");
@@ -566,10 +566,8 @@ public class InstallWebLayerTest {
 
     private static Map<String, String> h2DbConfig() {
         Map<String, String> dbConfig = new LinkedHashMap<>();
-        dbConfig.put("driverClass", "org.h2.Driver");
-        dbConfig.put("jdbcUrl", "jdbc:h2:mem:zrlog_install_web_" + UUID.randomUUID()
-                + ";MODE=MySQL;DATABASE_TO_UPPER=false;CASE_INSENSITIVE_IDENTIFIERS=TRUE"
-                + ";NON_KEYWORDS=USER,VALUE,COMMENT,TYPE;DB_CLOSE_DELAY=-1");
+        dbConfig.put("driverClass", InMemoryDatabase.H2_DRIVER_CLASS);
+        dbConfig.put("jdbcUrl", InMemoryDatabase.h2JdbcUrl("zrlog_install_web_" + UUID.randomUUID()));
         dbConfig.put("user", "sa");
         dbConfig.put("password", "");
         dbConfig.put("dbType", "h2");

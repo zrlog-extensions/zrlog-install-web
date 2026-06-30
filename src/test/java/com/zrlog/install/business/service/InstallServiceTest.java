@@ -2,6 +2,8 @@ package com.zrlog.install.business.service;
 
 import com.hibegin.common.dao.DAO;
 import com.hibegin.common.dao.DataSourceWrapper;
+import com.hibegin.common.dao.InMemoryDatabase;
+import com.hibegin.common.dao.SqlConvertUtils;
 import com.zrlog.install.business.type.TestConnectDbResult;
 import com.zrlog.install.business.vo.InstallConfigVO;
 import com.zrlog.install.web.InstallConstants;
@@ -65,7 +67,7 @@ public class InstallServiceTest {
         try (var input = Files.newInputStream(dbFile.toPath())) {
             stored.load(input);
         }
-        assertEquals("org.h2.Driver", stored.getProperty("driverClass"));
+        assertEquals(InMemoryDatabase.H2_DRIVER_CLASS, stored.getProperty("driverClass"));
         assertEquals("sa", stored.getProperty("user"));
         try (var ds = InstallService.buildDataSource(stored, true)) {
             DAO dao = new DAO(ds);
@@ -94,13 +96,10 @@ public class InstallServiceTest {
     }
 
     @Test
-    public void shouldOnlyTreatCommaSeparatedDropTableAsBatchDropSql() throws Exception {
-        Method method = InstallService.class.getDeclaredMethod("isBatchDropTableSql", String.class);
-        method.setAccessible(true);
-
-        assertTrue((Boolean) method.invoke(null, " DROP TABLE IF EXISTS `log`, `comment` "));
-        assertFalse((Boolean) method.invoke(null, "DROP TABLE IF EXISTS `log`"));
-        assertFalse((Boolean) method.invoke(null, "DELETE FROM `log`, `comment`"));
+    public void shouldOnlyTreatCommaSeparatedDropTableAsBatchDropSql() {
+        assertTrue(SqlConvertUtils.isBatchDropTableSql(" DROP TABLE IF EXISTS `log`, `comment` "));
+        assertFalse(SqlConvertUtils.isBatchDropTableSql("DROP TABLE IF EXISTS `log`"));
+        assertFalse(SqlConvertUtils.isBatchDropTableSql("DELETE FROM `log`, `comment`"));
     }
 
     @Test
@@ -183,7 +182,7 @@ public class InstallServiceTest {
                 new File(root, "db.properties"),
                 new File(root, "install.lock"));
         Map<String, String> dbConn = new HashMap<>();
-        dbConn.put("jdbcUrl", "jdbc:h2:mem:missing_driver");
+        dbConn.put("jdbcUrl", InMemoryDatabase.h2JdbcUrl("missing_driver"));
         InstallConfigVO installConfigVO = installConfigVO(Collections.emptyMap(), null, null);
         installConfigVO.setDbConfig(dbConn);
 
@@ -396,10 +395,8 @@ public class InstallServiceTest {
 
     private static Map<String, String> h2DbConfig() {
         Map<String, String> dbConfig = new LinkedHashMap<>();
-        dbConfig.put("driverClass", "org.h2.Driver");
-        dbConfig.put("jdbcUrl", "jdbc:h2:mem:zrlog_install_" + UUID.randomUUID()
-                + ";MODE=MySQL;DATABASE_TO_UPPER=false;CASE_INSENSITIVE_IDENTIFIERS=TRUE"
-                + ";NON_KEYWORDS=USER,VALUE,COMMENT,TYPE;DB_CLOSE_DELAY=-1");
+        dbConfig.put("driverClass", InMemoryDatabase.H2_DRIVER_CLASS);
+        dbConfig.put("jdbcUrl", InMemoryDatabase.h2JdbcUrl("zrlog_install_" + UUID.randomUUID()));
         dbConfig.put("user", "sa");
         dbConfig.put("password", "");
         dbConfig.put("dbType", "h2");

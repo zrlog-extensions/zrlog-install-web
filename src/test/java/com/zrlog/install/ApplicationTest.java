@@ -1,6 +1,7 @@
 package com.zrlog.install;
 
 import com.google.gson.Gson;
+import com.hibegin.common.dao.InMemoryDatabase;
 import com.zrlog.install.business.vo.InstallConfigVO;
 import com.zrlog.install.web.InstallAction;
 import com.zrlog.install.web.InstallConstants;
@@ -62,10 +63,8 @@ public class ApplicationTest {
 
     private static Map<String, String> h2DbConfig() {
         Map<String, String> dbConfig = new LinkedHashMap<>();
-        dbConfig.put("driverClass", "org.h2.Driver");
-        dbConfig.put("jdbcUrl", "jdbc:h2:mem:zrlog_application_install_" + UUID.randomUUID()
-                + ";MODE=MySQL;DATABASE_TO_UPPER=false;CASE_INSENSITIVE_IDENTIFIERS=TRUE"
-                + ";NON_KEYWORDS=USER,VALUE,COMMENT,TYPE;DB_CLOSE_DELAY=-1");
+        dbConfig.put("driverClass", InMemoryDatabase.H2_DRIVER_CLASS);
+        dbConfig.put("jdbcUrl", InMemoryDatabase.h2JdbcUrl("zrlog_application_install_" + UUID.randomUUID()));
         dbConfig.put("user", "sa");
         dbConfig.put("password", "");
         dbConfig.put("dbType", "h2");

@@ -60,6 +60,6 @@ jobs:
       - name: Build and Deploy to OSSRH
         run: |
           bash -e shell/install-compile-frontend.sh
-          ./mvnw -U clean deploy -s $GITHUB_WORKSPACE/settings.xml -Dgpg.passphrase=${{ secrets.GPG_PASSPHRASE }}
+          ./mvnw -U clean deploy -s $GITHUB_WORKSPACE/settings.xml -Dmaven.test.skip=false -DskipTests=false -Dgpg.passphrase=${{ secrets.GPG_PASSPHRASE }}
         env:
           GPG_TTY: $(tty)

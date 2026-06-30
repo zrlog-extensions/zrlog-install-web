@@ -218,16 +218,15 @@ public class InstallService {
                 List<String> sqlList;
                 if (ds.isWebApi()) {
                     sqlList = SqlConvertUtils.doMySQLToSqliteBySqlText(sql);
+                } else if (shouldNormalizeInstallSqlForH2()) {
+                    sqlList = SqlConvertUtils.doMySQLToH2BySqlText(sql);
                 } else {
                     sqlList = SqlConvertUtils.extractExecutableSql(sql);
-                    if (shouldNormalizeInstallSqlForH2()) {
-                        sqlList = normalizeInstallSqlForH2(sqlList);
-                    }
                 }
                 currentStep = "schema";
                 emitRunning(currentStep);
                 for (String sqlSt : sqlList) {
-                    if (isBatchDropTableSql(sqlSt)) {
+                    if (SqlConvertUtils.isBatchDropTableSql(sqlSt)) {
                         continue;
                     }
                     dao.execute(sqlSt);
@@ -325,30 +324,9 @@ public class InstallService {
         return Jsoup.parse(content).body().text();
     }
 
-    private static boolean isBatchDropTableSql(String sql) {
-        String trimSql = sql.trim().toUpperCase(Locale.ROOT);
-        return trimSql.startsWith("DROP TABLE IF EXISTS") && trimSql.contains(",");
-    }
-
     private boolean shouldNormalizeInstallSqlForH2() {
         return "h2".equalsIgnoreCase(dbConn.get("dbType"))
                 || "org.h2.Driver".equals(dbConn.get("driverClass"));
-    }
-
-    private static List<String> normalizeInstallSqlForH2(List<String> sqlList) {
-        List<String> normalizedList = new ArrayList<>();
-        for (String sql : sqlList) {
-            normalizedList.add(sql
-                    .replaceAll("(?i)UNIQUE\\s+KEY\\s+`[^`]+`\\s*\\(", "UNIQUE (")
-                    .replaceAll("(?i)KEY\\s+`[^`]+`\\s*\\(", "INDEX (")
-                    .replaceAll("(?i)\\s+COMMENT\\s+'[^']*'", "")
-                    .replace("bit(1)", "boolean")
-                    .replace("DEFAULT b'0'", "DEFAULT false")
-                    .replace("DEFAULT b'1'", "DEFAULT true")
-                    .replaceAll("(?i)\\)\\s*ENGINE\\s*=\\s*InnoDB\\s+DEFAULT\\s+CHARSET\\s*=\\s*[^\\s;]+"
-                            + "(?:\\s+COLLATE\\s+[^\\s;]+)?", ")"));
-        }
-        return normalizedList;
     }
 
     private boolean insertFirstArticle(DAO dao) throws Exception {
