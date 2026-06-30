@@ -75,7 +75,7 @@ public class InstallService {
      * @param webSite
      * @return
      */
-    private Map<String, Object> getDefaultWebSiteSettingMap(Map<String, String> webSite) {
+    Map<String, Object> getDefaultWebSiteSettingMap(Map<String, String> webSite) {
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("appId", UUID.randomUUID().toString());
         map.put("title", Objects.requireNonNullElse(webSite.get("title"), ""));
@@ -306,7 +306,7 @@ public class InstallService {
         }
     }
 
-    private String sanitizeError(Exception e) {
+    String sanitizeError(Exception e) {
         if (e.getMessage() == null || e.getMessage().trim().isEmpty()) {
             return e.getClass().getSimpleName();
         }
@@ -317,7 +317,7 @@ public class InstallService {
         return firstLine;
     }
 
-    private static String getPlainSearchText(String content) {
+    static String getPlainSearchText(String content) {
         if (StringUtils.isEmpty(content)) {
             return "";
         }
@@ -329,7 +329,7 @@ public class InstallService {
                 || "org.h2.Driver".equals(dbConn.get("driverClass"));
     }
 
-    private boolean insertFirstArticle(DAO dao) throws Exception {
+    boolean insertFirstArticle(DAO dao) throws Exception {
         int logId = 1;
         String insetLog = "INSERT INTO `log`(`logId`,`canComment`,`keywords`,`alias`,`typeId`,`userId`,`title`,`content`,`plain_content`,`markdown`,`digest`,`releaseTime`,`last_update_date`,`rubbish`,`privacy`) VALUES (" + logId + ",?,?,?,1,1,?,?,?,?,?,?,?,?,?)";
         List<Object> params = new ArrayList<>();
@@ -365,17 +365,17 @@ public class InstallService {
         return dao.execute(insetLog, params.toArray());
     }
 
-    private boolean insertType(DAO dao) throws SQLException {
+    boolean insertType(DAO dao) throws SQLException {
         String insertLogType = "INSERT INTO `type`(`typeId`, `typeName`, `remark`, `alias`) VALUES (1,'" + InstallI18nUtil.getInstallStringFromRes("defaultType") + "','','note')";
         return dao.execute(insertLogType);
     }
 
-    private boolean insertTag(DAO dao) throws SQLException {
+    boolean insertTag(DAO dao) throws SQLException {
         String insertTag = "INSERT INTO `tag`(`tagId`,`text`,`count`) VALUES (1,'" + InstallI18nUtil.getInstallStringFromRes("defaultType") + "',1)";
         return dao.execute(insertTag);
     }
 
-    private boolean initPlugin(DAO dao) throws SQLException {
+    boolean initPlugin(DAO dao) throws SQLException {
         String insertPluginSql = "INSERT INTO `plugin` VALUES (1,NULL,true,'" + InstallI18nUtil.getInstallStringFromRes("category") + "',NULL,'types',3)," +
                 "(2,NULL,true,'" + InstallI18nUtil.getInstallStringFromRes("tag") + "',NULL,'tags',3)," +
                 "(3,NULL,true,'" + InstallI18nUtil.getInstallStringFromRes("link") + "',NULL,'links',2)," +
@@ -383,18 +383,18 @@ public class InstallService {
         return dao.execute(insertPluginSql);
     }
 
-    private boolean insertNav(DAO dao) throws SQLException {
+    boolean insertNav(DAO dao) throws SQLException {
         String insertLogNavSql = "INSERT INTO `lognav`( `navId`,`url`, `navName`,`icon`, `sort`) VALUES (?,?,?,?,?)";
         return dao.execute(insertLogNavSql, 1, "/", InstallI18nUtil.getInstallStringFromRes("home"), "iconfont icon-home-fill", 1)
                 && dao.execute(insertLogNavSql, 2, "/admin/login", InstallI18nUtil.getInstallStringFromRes("manage"), "iconfont icon-user-fill", 2);
     }
 
-    private boolean initUser(Map<String, String> blogMsg, DAO dao) throws SQLException {
+    boolean initUser(Map<String, String> blogMsg, DAO dao) throws SQLException {
         String insertUserSql = "INSERT INTO `user`( `userId`,`userName`, `password`, `email`,`secretKey`) VALUES (1,?,?,?,?)";
         return dao.execute(insertUserSql, blogMsg.get("username"), installConfig.encryptPassword(blogMsg.get("password")), configMsg.get("email"), configMsg.getOrDefault("secretKey", UUID.randomUUID().toString()));
     }
 
-    private boolean initWebSite(DAO dao) throws SQLException {
+    boolean initWebSite(DAO dao) throws SQLException {
         StringBuilder sb = new StringBuilder();
         sb.append("INSERT INTO `website` (`name`, `value`) VALUES ");
         Map<String, Object> defaultMap = getDefaultWebSiteSettingMap(configMsg);

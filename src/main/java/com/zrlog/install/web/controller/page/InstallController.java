@@ -20,7 +20,7 @@ import java.util.Objects;
  */
 public class InstallController extends Controller {
 
-    private void fillToRealLink(HttpRequest request, Element link) {
+    protected void fillToRealLink(HttpRequest request, Element link) {
         String newUrl = link.attr("href").replaceFirst("/", request.getContextPath() + "/");
         link.attr("href", newUrl);
     }

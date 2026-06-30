@@ -53,7 +53,7 @@ public class ApiInstallController extends Controller {
         return new TestConnectResponse();
     }
 
-    private Map<String, String> getDbConn() {
+    protected Map<String, String> getDbConn() {
         if (StringUtils.isEmpty(getRequest().getParaToStr("dbHost"))) {
             throw new MissingDbHostException();
         }
@@ -118,7 +118,7 @@ public class ApiInstallController extends Controller {
         return new InstallProbeResponse(new InstallProbeService().probe(installConfig));
     }
 
-    private void writeInstallStream(InstallConfigVO configVO) throws IOException {
+    protected void writeInstallStream(InstallConfigVO configVO) throws IOException {
         InstallSseEmitter.write(response, "install-start", "install-error", emitter -> {
             AtomicBoolean errorSent = new AtomicBoolean(false);
             boolean installed = new InstallService(installConfig, configVO, event -> {
@@ -139,11 +139,11 @@ public class ApiInstallController extends Controller {
         });
     }
 
-    private InstallResultResponse buildInstallResultResponse() {
+    protected InstallResultResponse buildInstallResultResponse() {
         return new InstallResultResponse(new InstallSuccessData(InstallSuccessContentUtils.getContent(installConfig.getDbPropertiesFile(), installConfig.isAskConfig(), request.getServerConfig())));
     }
 
-    private boolean isSseRequest() {
+    protected boolean isSseRequest() {
         String accept = request.getHeader("Accept");
         return Objects.nonNull(accept) && accept.contains("text/event-stream");
     }

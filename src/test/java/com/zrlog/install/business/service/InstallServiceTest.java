@@ -12,7 +12,6 @@ import org.junit.After;
 import org.junit.Test;
 
 import java.io.File;
-import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -87,12 +86,9 @@ public class InstallServiceTest {
 
     @Test
     public void shouldStripHtmlWhenBuildingPlainSearchText() throws Exception {
-        Method method = InstallService.class.getDeclaredMethod("getPlainSearchText", String.class);
-        method.setAccessible(true);
-
-        assertEquals("", method.invoke(null, new Object[]{null}));
-        assertEquals("", method.invoke(null, ""));
-        assertEquals("hello world", method.invoke(null, "<p>hello <strong>world</strong></p>"));
+        assertEquals("", InstallService.getPlainSearchText(null));
+        assertEquals("", InstallService.getPlainSearchText(""));
+        assertEquals("hello world", InstallService.getPlainSearchText("<p>hello <strong>world</strong></p>"));
     }
 
     @Test
@@ -113,10 +109,8 @@ public class InstallServiceTest {
         Map<String, String> appendWebsite = new HashMap<>();
         appendWebsite.put("host", "example.com");
         InstallService service = new InstallService(config, installConfigVO(configMsg, appendWebsite, "/blog"));
-        Method method = InstallService.class.getDeclaredMethod("getDefaultWebSiteSettingMap", Map.class);
-        method.setAccessible(true);
 
-        Map<?, ?> settings = (Map<?, ?>) method.invoke(service, configMsg);
+        Map<?, ?> settings = service.getDefaultWebSiteSettingMap(configMsg);
 
         assertEquals("My Blog", settings.get("title"));
         assertEquals("", settings.get("second_title"));
@@ -218,10 +212,8 @@ public class InstallServiceTest {
         appendWebsite.put("host", "example.com");
         InstallService service = new InstallService(config, installConfigVO(configMsg, appendWebsite, "/blog"));
         FakeDao dao = new FakeDao(true);
-        Method method = InstallService.class.getDeclaredMethod("initWebSite", DAO.class);
-        method.setAccessible(true);
 
-        assertTrue((Boolean) method.invoke(service, dao));
+        assertTrue(service.initWebSite(dao));
 
         assertEquals(1, dao.calls.size());
         FakeDao.Call call = dao.calls.get(0);
@@ -252,10 +244,8 @@ public class InstallServiceTest {
         configMsg.put("secretKey", "secret");
         InstallService service = new InstallService(config, installConfigVO(configMsg, null, null));
         FakeDao dao = new FakeDao(true);
-        Method method = InstallService.class.getDeclaredMethod("initUser", Map.class, DAO.class);
-        method.setAccessible(true);
 
-        assertTrue((Boolean) method.invoke(service, configMsg, dao));
+        assertTrue(service.initUser(configMsg, dao));
 
         assertEquals(1, dao.calls.size());
         FakeDao.Call call = dao.calls.get(0);
@@ -278,10 +268,8 @@ public class InstallServiceTest {
         configMsg.put("email", "admin@example.com");
         InstallService service = new InstallService(config, installConfigVO(configMsg, null, null));
         FakeDao dao = new FakeDao(true);
-        Method method = InstallService.class.getDeclaredMethod("initUser", Map.class, DAO.class);
-        method.setAccessible(true);
 
-        assertTrue((Boolean) method.invoke(service, configMsg, dao));
+        assertTrue(service.initUser(configMsg, dao));
 
         assertEquals(36, dao.calls.get(0).args[3].toString().length());
     }
@@ -297,10 +285,10 @@ public class InstallServiceTest {
                 installConfigVO(new HashMap<>(), null, null));
         FakeDao dao = new FakeDao(true);
 
-        assertTrue(invokeBoolean(service, "insertNav", dao));
-        assertTrue(invokeBoolean(service, "insertType", dao));
-        assertTrue(invokeBoolean(service, "insertTag", dao));
-        assertTrue(invokeBoolean(service, "initPlugin", dao));
+        assertTrue(service.insertNav(dao));
+        assertTrue(service.insertType(dao));
+        assertTrue(service.insertTag(dao));
+        assertTrue(service.initPlugin(dao));
 
         assertEquals(5, dao.calls.size());
         assertTrue(dao.calls.get(0).sql.startsWith("INSERT INTO `lognav`"));
@@ -322,10 +310,8 @@ public class InstallServiceTest {
         configMsg.put("installDate", "2026-06-29 10:20:30 +0800");
         InstallService service = new InstallService(config, installConfigVO(configMsg, null, "/blog"));
         FakeDao dao = new FakeDao(true);
-        Method method = InstallService.class.getDeclaredMethod("insertFirstArticle", DAO.class);
-        method.setAccessible(true);
 
-        assertTrue((Boolean) method.invoke(service, dao));
+        assertTrue(service.insertFirstArticle(dao));
 
         assertEquals(1, dao.calls.size());
         FakeDao.Call call = dao.calls.get(0);
@@ -351,10 +337,8 @@ public class InstallServiceTest {
         InstallConstants.installConfig = config;
         InstallService service = new InstallService(config, installConfigVO(new HashMap<>(), null, "/blog"));
         FakeDao dao = new FakeDao(true);
-        Method method = InstallService.class.getDeclaredMethod("insertFirstArticle", DAO.class);
-        method.setAccessible(true);
 
-        assertTrue((Boolean) method.invoke(service, dao));
+        assertTrue(service.insertFirstArticle(dao));
 
         FakeDao.Call call = dao.calls.get(0);
         assertTrue(call.args[8] instanceof Date);
@@ -367,19 +351,11 @@ public class InstallServiceTest {
         InstallService service = new InstallService(new FakeInstallConfig(
                 new File(root, "db.properties"),
                 new File(root, "install.lock")), installConfigVO(Collections.emptyMap(), null, null));
-        Method method = InstallService.class.getDeclaredMethod("sanitizeError", Exception.class);
-        method.setAccessible(true);
         String longMessage = repeat("a", 220) + "\nsecond line";
 
-        assertEquals("IllegalStateException", method.invoke(service, new IllegalStateException(" ")));
-        assertEquals(180, ((String) method.invoke(service, new IllegalStateException(longMessage))).length());
-        assertEquals("first line", method.invoke(service, new IllegalStateException("first line\nsecond line")));
-    }
-
-    private static boolean invokeBoolean(InstallService service, String methodName, DAO dao) throws Exception {
-        Method method = InstallService.class.getDeclaredMethod(methodName, DAO.class);
-        method.setAccessible(true);
-        return (Boolean) method.invoke(service, dao);
+        assertEquals("IllegalStateException", service.sanitizeError(new IllegalStateException(" ")));
+        assertEquals(180, service.sanitizeError(new IllegalStateException(longMessage)).length());
+        assertEquals("first line", service.sanitizeError(new IllegalStateException("first line\nsecond line")));
     }
 
     private static InstallConfigVO installConfigVO(Map<String, String> configMsg,

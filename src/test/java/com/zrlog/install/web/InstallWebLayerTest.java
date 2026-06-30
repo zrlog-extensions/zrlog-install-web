@@ -36,8 +36,6 @@ import org.junit.Test;
 
 import java.io.InputStream;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -108,7 +106,7 @@ public class InstallWebLayerTest {
 
     @Test
     public void shouldBuildDatabaseConnectionMapFromControllerRequest() throws Exception {
-        ApiInstallController controller = new ApiInstallController();
+        TestApiInstallController controller = new TestApiInstallController();
         setControllerRequest(controller, request(Map.of(
                 "dbHost", "localhost",
                 "dbPort", "3306",
@@ -117,10 +115,8 @@ public class InstallWebLayerTest {
                 "dbName", "zrlog",
                 "dbType", "mysql"
         )));
-        Method method = ApiInstallController.class.getDeclaredMethod("getDbConn");
-        method.setAccessible(true);
 
-        Map<?, ?> dbConn = (Map<?, ?>) method.invoke(controller);
+        Map<?, ?> dbConn = controller.dbConn();
 
         assertEquals("root", dbConn.get("user"));
         assertEquals("password", dbConn.get("password"));
@@ -177,17 +173,14 @@ public class InstallWebLayerTest {
 
     @Test
     public void shouldDetectSseRequestsByAcceptHeader() throws Exception {
-        Method method = ApiInstallController.class.getDeclaredMethod("isSseRequest");
-        method.setAccessible(true);
-
-        ApiInstallController controller = new ApiInstallController();
+        TestApiInstallController controller = new TestApiInstallController();
         setControllerRequest(controller, request("/api/install/start", new HashMap<>(),
                 Map.of("Accept", "application/json, text/event-stream")));
-        assertEquals(true, method.invoke(controller));
+        assertTrue(controller.sseRequest());
 
         setControllerRequest(controller, request("/api/install/start", new HashMap<>(),
                 Map.of("Accept", "application/json")));
-        assertEquals(false, method.invoke(controller));
+        assertFalse(controller.sseRequest());
     }
 
     @Test
@@ -276,7 +269,7 @@ public class InstallWebLayerTest {
         try {
             System.setProperty("sws.conf.path", confPath.toString());
             InstallConstants.installConfig = installConfig(false, false);
-            ApiInstallController controller = new ApiInstallController();
+            TestApiInstallController controller = new TestApiInstallController();
             CapturedResponse capturedResponse = new CapturedResponse();
             setControllerRequest(controller, request("/api/install/start", new HashMap<>(),
                     Map.of("Accept", "text/event-stream")));
@@ -285,10 +278,8 @@ public class InstallWebLayerTest {
             configVO.setConfigMsg(installParams("h2"));
             configVO.setDbConfig(h2DbConfig());
             configVO.setContextPath("/blog");
-            Method method = ApiInstallController.class.getDeclaredMethod("writeInstallStream", InstallConfigVO.class);
-            method.setAccessible(true);
 
-            method.invoke(controller, configVO);
+            controller.installStream(configVO);
 
             String body = new String(capturedResponse.written.readAllBytes());
             assertTrue(body, body.contains("event: install-progress"));
@@ -306,12 +297,10 @@ public class InstallWebLayerTest {
         com.zrlog.install.web.config.InstallConfig previousConfig = InstallConstants.installConfig;
         try {
             InstallConstants.installConfig = installConfig(false, false);
-            ApiInstallController controller = new ApiInstallController();
+            TestApiInstallController controller = new TestApiInstallController();
             setControllerRequest(controller, request("/api/install/start", new HashMap<>()));
-            Method method = ApiInstallController.class.getDeclaredMethod("buildInstallResultResponse");
-            method.setAccessible(true);
 
-            InstallResultResponse response = (InstallResultResponse) method.invoke(controller);
+            InstallResultResponse response = controller.installResult();
 
             assertEquals(0, response.getError());
             assertNotNull(response.getData());
@@ -323,11 +312,8 @@ public class InstallWebLayerTest {
 
     @Test
     public void shouldDetectMigrateBatchDropTableSql() throws Exception {
-        Method method = ApiMigrateController.class.getDeclaredMethod("isBatchDropTableSql", String.class);
-        method.setAccessible(true);
-
-        assertEquals(true, method.invoke(null, "DROP TABLE IF EXISTS `a`, `b`"));
-        assertEquals(false, method.invoke(null, "DROP TABLE IF EXISTS `a`"));
+        assertTrue(TestApiMigrateController.batchDropTableSql("DROP TABLE IF EXISTS `a`, `b`"));
+        assertFalse(TestApiMigrateController.batchDropTableSql("DROP TABLE IF EXISTS `a`"));
     }
 
     @Test
@@ -423,13 +409,10 @@ public class InstallWebLayerTest {
 
     @Test
     public void shouldRewriteInstallPageAssetLinksWithContextPath() throws Exception {
-        com.zrlog.install.web.controller.page.InstallController controller =
-                new com.zrlog.install.web.controller.page.InstallController();
-        Method method = controller.getClass().getDeclaredMethod("fillToRealLink", HttpRequest.class, Element.class);
-        method.setAccessible(true);
+        TestInstallController controller = new TestInstallController();
         Element link = Jsoup.parse("<a href=\"/favicon.ico\"></a>").selectFirst("a");
 
-        method.invoke(controller, request("/blog", new HashMap<>()), link);
+        controller.fill(request("/blog", new HashMap<>()), link);
 
         assertEquals("/blog/favicon.ico", link.attr("href"));
     }
@@ -483,15 +466,13 @@ public class InstallWebLayerTest {
     }
 
     private static void assertInvocationCause(Class<?> expectedCause, Map<String, String> params) throws Exception {
-        ApiInstallController controller = new ApiInstallController();
+        TestApiInstallController controller = new TestApiInstallController();
         setControllerRequest(controller, request(params));
-        Method method = ApiInstallController.class.getDeclaredMethod("getDbConn");
-        method.setAccessible(true);
 
         try {
-            method.invoke(controller);
-        } catch (InvocationTargetException e) {
-            assertTrue(expectedCause.isInstance(e.getCause()));
+            controller.dbConn();
+        } catch (RuntimeException e) {
+            assertTrue(expectedCause.isInstance(e));
             return;
         }
         throw new AssertionError("Expected " + expectedCause.getName());
@@ -653,6 +634,39 @@ public class InstallWebLayerTest {
                 return askConfig;
             }
         };
+    }
+
+    private static class TestApiInstallController extends ApiInstallController {
+
+        Map<String, String> dbConn() {
+            return getDbConn();
+        }
+
+        boolean sseRequest() {
+            return isSseRequest();
+        }
+
+        void installStream(InstallConfigVO configVO) throws Exception {
+            writeInstallStream(configVO);
+        }
+
+        InstallResultResponse installResult() {
+            return buildInstallResultResponse();
+        }
+    }
+
+    private static class TestApiMigrateController extends ApiMigrateController {
+
+        static boolean batchDropTableSql(String sql) {
+            return isBatchDropTableSql(sql);
+        }
+    }
+
+    private static class TestInstallController extends com.zrlog.install.web.controller.page.InstallController {
+
+        void fill(HttpRequest request, Element link) {
+            fillToRealLink(request, link);
+        }
     }
 
     private static class CapturedResponse {

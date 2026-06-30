@@ -83,7 +83,7 @@ public class ApiMigrateController extends Controller {
         response.renderJson(new HashMap<>());
     }
 
-    private static boolean isBatchDropTableSql(String sql) {
+    protected static boolean isBatchDropTableSql(String sql) {
         String trimSql = sql.trim().toUpperCase();
         return trimSql.startsWith("DROP TABLE IF EXISTS") && trimSql.contains(",");
     }
