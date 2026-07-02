@@ -5,6 +5,7 @@ import com.hibegin.http.server.config.ServerConfig;
 import com.zrlog.install.business.response.InstallRuntimeResourceResponse;
 import com.zrlog.install.business.response.LastVersionInfo;
 import com.zrlog.install.web.InstallConstants;
+import com.zrlog.install.web.config.DefaultInstallConfig;
 import org.junit.After;
 import org.junit.Test;
 
@@ -20,7 +21,7 @@ public class InstallResourceServiceTest {
 
     @After
     public void tearDown() {
-        InstallConstants.installConfig = null;
+        InstallConstants.installConfig = new DefaultInstallConfig();
     }
 
     @Test
