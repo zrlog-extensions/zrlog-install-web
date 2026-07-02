@@ -5,7 +5,9 @@ import com.hibegin.common.dao.DataSourceWrapper;
 import com.hibegin.common.dao.InMemoryDatabase;
 import com.hibegin.common.dao.SqlConvertUtils;
 import com.zrlog.install.business.type.TestConnectDbResult;
+import com.zrlog.install.business.vo.DefaultWebsiteSettings;
 import com.zrlog.install.business.vo.InstallConfigVO;
+import com.zrlog.install.business.vo.InstallSiteConfig;
 import com.zrlog.install.web.InstallConstants;
 import com.zrlog.install.web.config.DefaultInstallConfig;
 import org.junit.After;
@@ -110,15 +112,16 @@ public class InstallServiceTest {
         appendWebsite.put("host", "example.com");
         InstallService service = new InstallService(config, installConfigVO(configMsg, appendWebsite, "/blog"));
 
-        Map<?, ?> settings = service.getDefaultWebSiteSettingMap(configMsg);
+        DefaultWebsiteSettings settings = service.getDefaultWebSiteSettings(InstallSiteConfig.from(configMsg));
+        Map<?, ?> settingsMap = settings.toMap();
 
-        assertEquals("My Blog", settings.get("title"));
-        assertEquals("", settings.get("second_title"));
-        assertEquals("zh_CN", settings.get("language"));
-        assertEquals("/include/templates/default", settings.get("template"));
-        assertEquals("23", settings.get("zrlogSqlVersion"));
-        assertEquals("example.com", settings.get("host"));
-        assertTrue(settings.containsKey("appId"));
+        assertEquals("My Blog", settings.getTitle());
+        assertEquals("", settings.getSecondTitle());
+        assertEquals("zh_CN", settings.getLanguage());
+        assertEquals("/include/templates/default", settings.getTemplate());
+        assertEquals("23", settings.getZrlogSqlVersion());
+        assertEquals("example.com", settingsMap.get("host"));
+        assertTrue(settingsMap.containsKey("appId"));
     }
 
     @Test
@@ -245,7 +248,7 @@ public class InstallServiceTest {
         InstallService service = new InstallService(config, installConfigVO(configMsg, null, null));
         FakeDao dao = new FakeDao(true);
 
-        assertTrue(service.initUser(configMsg, dao));
+        assertTrue(service.initUser(InstallSiteConfig.from(configMsg), dao));
 
         assertEquals(1, dao.calls.size());
         FakeDao.Call call = dao.calls.get(0);
@@ -269,7 +272,7 @@ public class InstallServiceTest {
         InstallService service = new InstallService(config, installConfigVO(configMsg, null, null));
         FakeDao dao = new FakeDao(true);
 
-        assertTrue(service.initUser(configMsg, dao));
+        assertTrue(service.initUser(InstallSiteConfig.from(configMsg), dao));
 
         assertEquals(36, dao.calls.get(0).args[3].toString().length());
     }

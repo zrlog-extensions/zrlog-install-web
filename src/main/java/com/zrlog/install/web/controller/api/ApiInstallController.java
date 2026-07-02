@@ -12,6 +12,8 @@ import com.zrlog.install.business.service.InstallResourceService;
 import com.zrlog.install.business.service.InstallService;
 import com.zrlog.install.business.type.TestConnectDbResult;
 import com.zrlog.install.business.vo.InstallConfigVO;
+import com.zrlog.install.business.vo.InstallDatabaseConfig;
+import com.zrlog.install.business.vo.InstallSiteConfig;
 import com.zrlog.install.business.vo.InstallSuccessData;
 import com.zrlog.install.exception.*;
 import com.zrlog.install.util.InstallSseEmitter;
@@ -21,8 +23,6 @@ import com.zrlog.install.web.InstallConstants;
 import com.zrlog.install.web.config.InstallConfig;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -53,7 +53,7 @@ public class ApiInstallController extends Controller {
         return new TestConnectResponse();
     }
 
-    protected Map<String, String> getDbConn() {
+    protected InstallDatabaseConfig getDbConn() {
         if (StringUtils.isEmpty(getRequest().getParaToStr("dbHost"))) {
             throw new MissingDbHostException();
         }
@@ -66,20 +66,20 @@ public class ApiInstallController extends Controller {
         if (StringUtils.isEmpty(getRequest().getParaToStr("dbName"))) {
             throw new MissingDbNameException();
         }
-        Map<String, String> dbConn = new HashMap<>();
-        dbConn.put("user", getRequest().getParaToStr("dbUserName", ""));
-        dbConn.put("password", getRequest().getParaToStr("dbPassword", ""));
+        InstallDatabaseConfig dbConn = new InstallDatabaseConfig();
+        dbConn.setUser(getRequest().getParaToStr("dbUserName", ""));
+        dbConn.setPassword(getRequest().getParaToStr("dbPassword", ""));
         String dbType = getRequest().getParaToStr("dbType", "mysql");
-        dbConn.put("dbType", dbType);
-        dbConn.put("dbHost", getRequest().getParaToStr("dbHost"));
-        dbConn.put("dbPort", getRequest().getParaToStr("dbPort"));
-        dbConn.put("dbName", getRequest().getParaToStr("dbName"));
+        dbConn.setDbType(dbType);
+        dbConn.setDbHost(getRequest().getParaToStr("dbHost"));
+        dbConn.setDbPort(getRequest().getParaToStr("dbPort"));
+        dbConn.setDbName(getRequest().getParaToStr("dbName"));
         String jdbcUrl = "jdbc:" + dbType + "://" + getRequest().getParaToStr("dbHost") + ":" + getRequest().getParaToStr("dbPort") + "/" + getRequest().getParaToStr("dbName");
         String jdbcUrlQueryStr = InstallConstants.installConfig.getJdbcUrlQueryStr(dbType, getRequest().getParamMap());
         if (Objects.equals(dbType, "mysql")) {
-            dbConn.put("driverClass", "com.mysql.cj.jdbc.Driver");
+            dbConn.setDriverClass("com.mysql.cj.jdbc.Driver");
         }
-        dbConn.put("jdbcUrl", jdbcUrl + (StringUtils.isEmpty(jdbcUrlQueryStr) ? "" : "?" + jdbcUrlQueryStr));
+        dbConn.setJdbcUrl(jdbcUrl + (StringUtils.isEmpty(jdbcUrlQueryStr) ? "" : "?" + jdbcUrlQueryStr));
         return dbConn;
     }
 
@@ -88,12 +88,12 @@ public class ApiInstallController extends Controller {
      */
     @ResponseBody
     public void startInstall() throws IOException {
-        Map<String, String> configMsg = new HashMap<>();
-        configMsg.put("title", getRequest().getParaToStr("title", ""));
-        configMsg.put("second_title", getRequest().getParaToStr("second_title", ""));
-        configMsg.put("username", getRequest().getParaToStr("username", ""));
-        configMsg.put("password", getRequest().getParaToStr("password", ""));
-        configMsg.put("email", getRequest().getParaToStr("email", ""));
+        InstallSiteConfig configMsg = new InstallSiteConfig();
+        configMsg.setTitle(getRequest().getParaToStr("title", ""));
+        configMsg.setSecondTitle(getRequest().getParaToStr("second_title", ""));
+        configMsg.setUsername(getRequest().getParaToStr("username", ""));
+        configMsg.setPassword(getRequest().getParaToStr("password", ""));
+        configMsg.setEmail(getRequest().getParaToStr("email", ""));
         InstallConfigVO configVO = new InstallConfigVO();
         configVO.setConfigMsg(configMsg);
         configVO.setDbConfig(getDbConn());

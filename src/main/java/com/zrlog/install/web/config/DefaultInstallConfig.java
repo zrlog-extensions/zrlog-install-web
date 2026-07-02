@@ -3,6 +3,7 @@ package com.zrlog.install.web.config;
 import com.hibegin.common.util.PasswordHashUtils;
 import com.hibegin.http.server.api.HttpErrorHandle;
 import com.hibegin.http.server.util.PathUtil;
+import com.zrlog.install.business.response.InstallApiResponses;
 import com.zrlog.install.business.response.LastVersionInfo;
 import com.zrlog.install.exception.AbstractInstallException;
 import com.zrlog.install.exception.InstallErrorCodeProvider;
@@ -12,7 +13,6 @@ import com.hibegin.common.util.LoggerUtil;
 import java.io.File;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Level;
@@ -101,19 +101,14 @@ public class DefaultInstallConfig implements InstallConfig {
         return (request, response, e) -> {
             if (e instanceof AbstractInstallException) {
                 AbstractInstallException ee = (AbstractInstallException) e;
-                Map<String, Object> error = new HashMap<>();
-                error.put("error", ee.getError());
-                error.put("message", ee.getMessage());
+                String code = null;
                 if (ee instanceof InstallErrorCodeProvider) {
-                    error.put("code", ((InstallErrorCodeProvider) ee).getCode());
+                    code = ((InstallErrorCodeProvider) ee).getCode();
                 }
-                response.renderJson(error);
+                response.renderJson(InstallApiResponses.error(ee.getError(), ee.getMessage(), code));
             } else {
-                Map<String, Object> error = new HashMap<>();
-                error.put("error", 9999);
-                error.put("message", e.getMessage());
                 LOGGER.log(Level.SEVERE, "Install request failed", e);
-                response.renderJson(error);
+                response.renderJson(InstallApiResponses.error(9999, e.getMessage(), null));
             }
         };
     }

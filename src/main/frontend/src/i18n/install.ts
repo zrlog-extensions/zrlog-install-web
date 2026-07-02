@@ -19,6 +19,11 @@ const zhCN = {
         websiteStep: "站点信息",
         completeStep: "完成",
     },
+    theme: {
+        light: "浅色",
+        dark: "深色",
+        system: "系统",
+    },
     upgrade: {
         newVersion: "有新版本",
         newVersionTip: "发现新版本 v{version}",
@@ -185,6 +190,11 @@ const enUS: typeof zhCN = {
         databaseStep: "Database",
         websiteStep: "Site Info",
         completeStep: "Complete",
+    },
+    theme: {
+        light: "Light",
+        dark: "Dark",
+        system: "System",
     },
     upgrade: {
         newVersion: "New version",

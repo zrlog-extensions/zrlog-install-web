@@ -14,6 +14,7 @@ import com.zrlog.install.business.response.InstallResourceResponse;
 import com.zrlog.install.business.response.InstallResultResponse;
 import com.zrlog.install.business.response.InstallRuntimeResourceResponse;
 import com.zrlog.install.business.vo.InstallConfigVO;
+import com.zrlog.install.business.vo.InstallDatabaseConfig;
 import com.zrlog.install.exception.MissingDbHostException;
 import com.zrlog.install.exception.MissingDbNameException;
 import com.zrlog.install.exception.MissingDbPortException;
@@ -116,16 +117,16 @@ public class InstallWebLayerTest {
                 "dbType", "mysql"
         )));
 
-        Map<?, ?> dbConn = controller.dbConn();
+        InstallDatabaseConfig dbConn = controller.dbConn();
 
-        assertEquals("root", dbConn.get("user"));
-        assertEquals("password", dbConn.get("password"));
-        assertEquals("mysql", dbConn.get("dbType"));
-        assertEquals("localhost", dbConn.get("dbHost"));
-        assertEquals("3306", dbConn.get("dbPort"));
-        assertEquals("zrlog", dbConn.get("dbName"));
-        assertEquals("com.mysql.cj.jdbc.Driver", dbConn.get("driverClass"));
-        assertTrue(dbConn.get("jdbcUrl").toString().contains("jdbc:mysql://localhost:3306/zrlog"));
+        assertEquals("root", dbConn.getUser());
+        assertEquals("password", dbConn.getPassword());
+        assertEquals("mysql", dbConn.getDbType());
+        assertEquals("localhost", dbConn.getDbHost());
+        assertEquals("3306", dbConn.getDbPort());
+        assertEquals("zrlog", dbConn.getDbName());
+        assertEquals("com.mysql.cj.jdbc.Driver", dbConn.getDriverClass());
+        assertTrue(dbConn.getJdbcUrl().contains("jdbc:mysql://localhost:3306/zrlog"));
     }
 
     @Test
@@ -638,7 +639,7 @@ public class InstallWebLayerTest {
 
     private static class TestApiInstallController extends ApiInstallController {
 
-        Map<String, String> dbConn() {
+        InstallDatabaseConfig dbConn() {
             return getDbConn();
         }
 

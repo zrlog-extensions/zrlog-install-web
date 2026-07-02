@@ -9,7 +9,10 @@ import com.hibegin.common.util.LoggerUtil;
 import com.hibegin.template.BasicTemplateRender;
 import com.zrlog.install.business.response.InstallProgressEvent;
 import com.zrlog.install.business.type.TestConnectDbResult;
+import com.zrlog.install.business.vo.InstallDatabaseConfig;
+import com.zrlog.install.business.vo.DefaultWebsiteSettings;
 import com.zrlog.install.business.vo.InstallConfigVO;
+import com.zrlog.install.business.vo.InstallSiteConfig;
 import com.zrlog.install.util.InstallI18nUtil;
 import com.zrlog.install.util.StringUtils;
 import com.zrlog.install.web.InstallAction;
@@ -34,8 +37,8 @@ import java.util.logging.Logger;
 public class InstallService {
 
     private static final Logger LOGGER = LoggerUtil.getLogger(InstallService.class);
-    private final Map<String, String> dbConn;
-    private final Map<String, String> configMsg;
+    private final InstallDatabaseConfig dbConn;
+    private final InstallSiteConfig configMsg;
     private final Map<String, String> appendWebsite;
     private final InstallAction installAction;
     private final InstallConfig installConfig;
@@ -48,8 +51,8 @@ public class InstallService {
 
     public InstallService(InstallConfig installConfig, InstallConfigVO installConfigVO,
                           InstallProgressListener progressListener) {
-        this.dbConn = installConfigVO.getDbConfig();
-        this.configMsg = installConfigVO.getConfigMsg();
+        this.dbConn = Objects.requireNonNullElseGet(installConfigVO.getDbConfig(), InstallDatabaseConfig::new);
+        this.configMsg = Objects.requireNonNullElseGet(installConfigVO.getConfigMsg(), InstallSiteConfig::new);
         this.appendWebsite = installConfigVO.getAppendWebsite();
         this.installAction = installConfig.getAction();
         this.installConfig = installConfig;
@@ -69,26 +72,8 @@ public class InstallService {
         return startInstall(dbConn, configMsg);
     }
 
-    /**
-     * 封装网站设置的数据数据，返回Map形式方便调用者进行遍历
-     *
-     * @param webSite
-     * @return
-     */
-    Map<String, Object> getDefaultWebSiteSettingMap(Map<String, String> webSite) {
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("appId", UUID.randomUUID().toString());
-        map.put("title", Objects.requireNonNullElse(webSite.get("title"), ""));
-        map.put("second_title", Objects.requireNonNullElse(webSite.get("second_title"), ""));
-        map.put("language", installConfig.getAcceptLanguage());
-        map.put("rows", 10);
-        map.put("template", installConfig.defaultTemplatePath());
-        map.put("autoUpgradeVersion", 86400);
-        map.put("zrlogSqlVersion", installConfig.getZrLogSqlVersion());
-        if (Objects.nonNull(appendWebsite)) {
-            map.putAll(appendWebsite);
-        }
-        return map;
+    DefaultWebsiteSettings getDefaultWebSiteSettings(InstallSiteConfig webSite) {
+        return DefaultWebsiteSettings.from(webSite, installConfig, appendWebsite);
     }
 
     static DataSourceWrapperImpl buildDataSource(Properties dbProperties, boolean dev) throws ClassNotFoundException {
@@ -113,8 +98,7 @@ public class InstallService {
      * 尝试使用填写的数据库信息连接数据库
      */
     public TestConnectDbResult testDbConn() {
-        Properties properties = new Properties();
-        properties.putAll(dbConn);
+        Properties properties = dbConn.toProperties();
         try (DataSourceWrapperImpl ds = buildDataSource(properties, EnvKit.isDevMode())) {
             ds.testConnection();
             return TestConnectDbResult.SUCCESS;
@@ -126,7 +110,7 @@ public class InstallService {
             return TestConnectDbResult.CREATE_CONNECT_ERROR;
         } catch (SQLSyntaxErrorException e) {
             LOGGER.log(Level.SEVERE, "", e);
-            if ("mysql".equals(dbConn.get("dbType")) && e.getMessage() != null && e.getMessage().contains("Unknown database")) {
+            if ("mysql".equals(dbConn.getDbType()) && e.getMessage() != null && e.getMessage().contains("Unknown database")) {
                 try {
                     if (createDatabase()) {
                         return TestConnectDbResult.SUCCESS;
@@ -153,14 +137,14 @@ public class InstallService {
     }
 
     private boolean createDatabase() throws Exception {
-        String dbName = dbConn.get("dbName");
-        String dbHost = dbConn.get("dbHost");
-        String dbPort = dbConn.get("dbPort");
-        String dbType = dbConn.get("dbType");
+        String dbName = dbConn.getDbName();
+        String dbHost = dbConn.getDbHost();
+        String dbPort = dbConn.getDbPort();
+        String dbType = dbConn.getDbType();
         if (StringUtils.isEmpty(dbName) || StringUtils.isEmpty(dbHost) || StringUtils.isEmpty(dbPort)) return false;
 
         Properties properties = new Properties();
-        properties.putAll(dbConn);
+        properties.putAll(dbConn.toMap());
         String baseJdbcUrl = "jdbc:" + dbType + "://" + dbHost + ":" + dbPort + "/";
         String jdbcUrlQueryStr = installConfig.getJdbcUrlQueryStr(dbType, Collections.emptyMap());
         properties.put("jdbcUrl", baseJdbcUrl + (StringUtils.isEmpty(jdbcUrlQueryStr) ? "" : "?" + jdbcUrlQueryStr));
@@ -185,7 +169,7 @@ public class InstallService {
         dbFile.getParentFile().mkdirs();
         dbFile.createNewFile();
         Properties prop = new Properties();
-        prop.putAll(dbConn);
+        prop.putAll(dbConn.toMap());
         prop.store(new FileOutputStream(dbFile), "This is a database configuration dbFile");
         File lockFile = installConfig.getAction().getLockFile();
         lockFile.getParentFile().mkdirs();
@@ -197,10 +181,9 @@ public class InstallService {
         installAction.installSuccess();
     }
 
-    private boolean startInstall(Map<String, String> dbConn, Map<String, String> blogMsg) {
+    private boolean startInstall(InstallDatabaseConfig dbConn, InstallSiteConfig blogMsg) {
         String currentStep = "preflight";
-        Properties properties = new Properties();
-        properties.putAll(dbConn);
+        Properties properties = dbConn.toProperties();
         //
         try {
             emitRunning(currentStep);
@@ -325,8 +308,8 @@ public class InstallService {
     }
 
     private boolean shouldNormalizeInstallSqlForH2() {
-        return "h2".equalsIgnoreCase(dbConn.get("dbType"))
-                || "org.h2.Driver".equals(dbConn.get("driverClass"));
+        return "h2".equalsIgnoreCase(dbConn.getDbType())
+                || "org.h2.Driver".equals(dbConn.getDriverClass());
     }
 
     boolean insertFirstArticle(DAO dao) throws Exception {
@@ -334,12 +317,11 @@ public class InstallService {
         String insetLog = "INSERT INTO `log`(`logId`,`canComment`,`keywords`,`alias`,`typeId`,`userId`,`title`,`content`,`plain_content`,`markdown`,`digest`,`releaseTime`,`last_update_date`,`rubbish`,`privacy`) VALUES (" + logId + ",?,?,?,1,1,?,?,?,?,?,?,?,?,?)";
         List<Object> params = new ArrayList<>();
         try (InputStream in = InstallService.class.getResourceAsStream("/i18n/init-blog/" + installConfig.getAcceptLanguage() + ".md")) {
-            Map<String, Object> data = new HashMap<>();
-            data.put("editUrl", contextPath + "/admin/article-edit?id=" + logId);
-            String markdown = new BasicTemplateRender(data, InstallService.class).render(in);
+            InitialArticleTemplateData data = new InitialArticleTemplateData(contextPath + "/admin/article-edit?id=" + logId);
+            String markdown = new BasicTemplateRender(data.toTemplateMap(), InstallService.class).render(in);
             //html read
             try (InputStream htmlIn = InstallService.class.getResourceAsStream("/i18n/init-blog/" + installConfig.getAcceptLanguage() + ".html")) {
-                String content = new BasicTemplateRender(data, InstallService.class).render(htmlIn);
+                String content = new BasicTemplateRender(data.toTemplateMap(), InstallService.class).render(htmlIn);
                 params.add(true);
                 params.add(InstallI18nUtil.getInstallStringFromRes("defaultType"));
                 params.add("hello-world");
@@ -348,7 +330,7 @@ public class InstallService {
                 params.add(getPlainSearchText(content));
                 params.add(markdown);
                 params.add(content);
-                String installDate = configMsg.get("installDate");
+                String installDate = configMsg.getInstallDate();
                 if (StringUtils.isEmpty(installDate)) {
                     params.add(new Date());
                     params.add(new Date());
@@ -389,15 +371,16 @@ public class InstallService {
                 && dao.execute(insertLogNavSql, 2, "/admin/login", InstallI18nUtil.getInstallStringFromRes("manage"), "iconfont icon-user-fill", 2);
     }
 
-    boolean initUser(Map<String, String> blogMsg, DAO dao) throws SQLException {
+    boolean initUser(InstallSiteConfig blogMsg, DAO dao) throws SQLException {
         String insertUserSql = "INSERT INTO `user`( `userId`,`userName`, `password`, `email`,`secretKey`) VALUES (1,?,?,?,?)";
-        return dao.execute(insertUserSql, blogMsg.get("username"), installConfig.encryptPassword(blogMsg.get("password")), configMsg.get("email"), configMsg.getOrDefault("secretKey", UUID.randomUUID().toString()));
+        return dao.execute(insertUserSql, blogMsg.getUsername(), installConfig.encryptPassword(blogMsg.getPassword()),
+                configMsg.getEmail(), configMsg.secretKeyOrNew());
     }
 
     boolean initWebSite(DAO dao) throws SQLException {
         StringBuilder sb = new StringBuilder();
         sb.append("INSERT INTO `website` (`name`, `value`) VALUES ");
-        Map<String, Object> defaultMap = getDefaultWebSiteSettingMap(configMsg);
+        Map<String, Object> defaultMap = getDefaultWebSiteSettings(configMsg).toMap();
         for (int i = 0; i < defaultMap.size(); i++) {
             sb.append("(").append("?").append(",").append("?").append("),");
         }
@@ -408,5 +391,20 @@ public class InstallService {
         }
         String insertWebSql = sb.substring(0, sb.toString().length() - 1);
         return dao.execute(insertWebSql, params.toArray());
+    }
+
+    private static class InitialArticleTemplateData {
+
+        private final String editUrl;
+
+        private InitialArticleTemplateData(String editUrl) {
+            this.editUrl = editUrl;
+        }
+
+        Map<String, Object> toTemplateMap() {
+            Map<String, Object> data = new LinkedHashMap<>();
+            data.put("editUrl", editUrl);
+            return data;
+        }
     }
 }

@@ -8,15 +8,18 @@ import {
     Divider,
     Form,
     FormInstance,
+    Grid,
     Input,
     Layout,
     List,
     message,
     Result,
     Select,
+    Segmented,
     Space,
     Steps,
     Tag,
+    theme,
     Typography
 } from 'antd';
 
@@ -27,10 +30,12 @@ import {mapToQueryString} from "../utils/helpers";
 import DisclaimerAgreement from "./DisclaimerAgreement";
 import UpgradeButton from './UpgradeButton';
 import InstallSuccessContent from './InstallSuccessContent';
+import EnvUtils, {ThemeMode} from "../utils/env-utils";
 
 const FormItem = Form.Item;
 const {Title, Paragraph} = Typography;
 const {Footer} = Layout;
+const {useBreakpoint} = Grid;
 
 type ProbeStatus = "pass" | "warning" | "block";
 type ProgressStatus = "running" | "complete" | "error";
@@ -219,6 +224,24 @@ const IndexLayout = () => {
     const formDataBaseInfoRef = useRef<FormInstance>(null);
     const formWeblogInfoRef = useRef<FormInstance>(null);
     const [messageApi, contextHolder] = message.useMessage({maxCount: 3});
+    const screens = useBreakpoint();
+    const {token} = theme.useToken();
+    const [themeMode, setThemeMode] = useState<ThemeMode>(EnvUtils.getThemeMode());
+
+    useEffect(() => {
+        const changeHandler = () => setThemeMode(EnvUtils.getThemeMode());
+        window.addEventListener(EnvUtils.themeModeChangeEvent, changeHandler);
+        window.addEventListener("storage", changeHandler);
+        return () => {
+            window.removeEventListener(EnvUtils.themeModeChangeEvent, changeHandler);
+            window.removeEventListener("storage", changeHandler);
+        };
+    }, []);
+
+    const changeThemeMode = (nextThemeMode: ThemeMode) => {
+        setThemeMode(nextThemeMode);
+        EnvUtils.setThemeMode(nextThemeMode);
+    };
 
     const loadProbe = () => {
         setState((prevState) => ({...prevState, probeLoading: true, probeError: undefined}));
@@ -435,6 +458,13 @@ const IndexLayout = () => {
         const alertType = state.probe.status === "pass" ? "success" : state.probe.status === "warning" ? "warning" : "error";
         const messageText = state.probe.status === "pass" ? res.probe.pass : state.probe.status === "warning" ? res.probe.warning : res.probe.block;
         const shouldShowDetails = state.probe.status !== "pass";
+        if (!shouldShowDetails) {
+            return <Space wrap size={[8, 4]} align="center">
+                <Tag color="success" style={{marginInlineEnd: 0}}>{messageText}</Tag>
+                <Text type="secondary">{res.probe.title}</Text>
+                <Button type="link" size="small" onClick={loadProbe}>{res.probe.retry}</Button>
+            </Space>;
+        }
         return <Space direction="vertical" style={{width: "100%"}}>
             <Alert
                 type={alertType}
@@ -482,9 +512,9 @@ const IndexLayout = () => {
         return <div style={{
             marginTop: 8,
             padding: "10px 12px",
-            border: "1px solid var(--ant-color-border, rgba(128, 128, 128, 0.25))",
-            borderRadius: 6,
-            background: "var(--ant-color-fill-quaternary, rgba(128, 128, 128, 0.06))",
+            border: `1px solid ${token.colorBorderSecondary}`,
+            borderRadius: token.borderRadius,
+            background: token.colorFillQuaternary,
         }}>
             <Space direction="vertical" size={6} style={{width: "100%"}}>
                 <Space wrap size={[8, 4]}>
@@ -526,6 +556,29 @@ const IndexLayout = () => {
     const nextDisabled = !state.agreementAccepted || state.probeLoading || state.probe?.status === "block";
     const currentDbType = state.dataBaseInfo.dbType as string;
     const mysqlSelected = currentDbType === "mysql";
+    const compactView = !screens.sm;
+    const cardTitle = (
+        <div style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 12,
+            flexWrap: "wrap",
+            width: "100%",
+        }}>
+            <span>{res.wizard.title}</span>
+            <Segmented
+                size="small"
+                value={themeMode}
+                onChange={(value) => changeThemeMode(value as ThemeMode)}
+                options={[
+                    {label: res.theme.light, value: "light"},
+                    {label: res.theme.dark, value: "dark"},
+                    {label: res.theme.system, value: "system"},
+                ]}
+            />
+        </div>
+    );
 
     return (
         <Layout style={{
@@ -533,13 +586,12 @@ const IndexLayout = () => {
             paddingLeft: 12, display: "flex", alignItems: "center"
         }}>
             {contextHolder}
-            <Card title={res.wizard.title} style={{
-                marginTop: 32, marginBottom: 32, width: "100%",
+            <Card title={cardTitle} style={{
+                marginTop: compactView ? 12 : 32, marginBottom: compactView ? 16 : 32, width: "100%",
                 maxWidth: 960
-            }}>
-                <UpgradeButton/>
-                <Steps current={state.current} items={getSteps()}/>
-                <div style={{marginTop: '20px'}}>
+            }} styles={{body: {padding: compactView ? 16 : undefined}}}>
+                <Steps current={state.current} items={getSteps()} size={compactView ? "small" : "default"}/>
+                <div style={{marginTop: compactView ? 16 : 20}}>
                     {state.current === 0 && (
                         <Space direction="vertical" size={16} style={{width: "100%"}}>
                             {renderProbe()}
@@ -667,12 +719,15 @@ const IndexLayout = () => {
                 {showFeedback && (
                     <>
                         <Divider/>
-                        <Alert
-                            type="info"
-                            showIcon
-                            message={res.feedback.title}
-                            description={<span>{res.feedback.content} <a target="_blank" rel="noreferrer" href={res.feedbackUrl}>{res.feedback.linkText}</a></span>}
-                        />
+                        <Space direction="vertical" size={12} style={{width: "100%"}}>
+                            <UpgradeButton/>
+                            <Alert
+                                type="info"
+                                showIcon
+                                message={res.feedback.title}
+                                description={<span>{res.feedback.content} <a target="_blank" rel="noreferrer" href={res.feedbackUrl}>{res.feedback.linkText}</a></span>}
+                            />
+                        </Space>
                     </>
                 )}
             </Card>

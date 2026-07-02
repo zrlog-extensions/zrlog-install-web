@@ -1,6 +1,7 @@
 package com.zrlog.install.web.config;
 
 import com.hibegin.http.server.api.HttpResponse;
+import com.zrlog.install.business.response.InstallApiResponses;
 import com.zrlog.install.business.response.LastVersionInfo;
 import com.zrlog.install.exception.InstallException;
 import com.zrlog.install.business.type.TestConnectDbResult;
@@ -74,10 +75,10 @@ public class DefaultInstallConfigTest {
         new DefaultInstallConfig().getErrorHandler().doHandle(null, response,
                 new InstallException(TestConnectDbResult.MISSING_JDBC_DRIVER));
 
-        Map<?, ?> map = (Map<?, ?>) rendered.get();
-        assertEquals(9000, map.get("error"));
-        assertEquals("MISSING_JDBC_DRIVER", map.get("code"));
-        assertTrue(map.get("message").toString().contains("[Error-MISSING_JDBC_DRIVER]"));
+        InstallApiResponses.Error error = (InstallApiResponses.Error) rendered.get();
+        assertEquals(Integer.valueOf(9000), error.getError());
+        assertEquals("MISSING_JDBC_DRIVER", error.getCode());
+        assertTrue(error.getMessage().contains("[Error-MISSING_JDBC_DRIVER]"));
     }
 
     @Test
@@ -88,9 +89,9 @@ public class DefaultInstallConfigTest {
         new DefaultInstallConfig().getErrorHandler().doHandle(null, response,
                 new IllegalStateException("boom"));
 
-        Map<?, ?> map = (Map<?, ?>) rendered.get();
-        assertEquals(9999, map.get("error"));
-        assertEquals("boom", map.get("message"));
+        InstallApiResponses.Error error = (InstallApiResponses.Error) rendered.get();
+        assertEquals(Integer.valueOf(9999), error.getError());
+        assertEquals("boom", error.getMessage());
     }
 
     private static HttpResponse response(AtomicReference<Object> rendered) {

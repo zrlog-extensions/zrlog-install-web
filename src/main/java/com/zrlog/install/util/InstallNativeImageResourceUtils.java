@@ -3,7 +3,9 @@ package com.zrlog.install.util;
 import com.google.gson.Gson;
 import com.hibegin.http.server.util.NativeImageUtils;
 import com.zrlog.install.business.response.*;
+import com.zrlog.install.business.vo.InstallDatabaseConfig;
 import com.zrlog.install.business.vo.InstallConfigVO;
+import com.zrlog.install.business.vo.InstallSiteConfig;
 import com.zrlog.install.business.vo.InstallSuccessData;
 
 import java.io.IOException;
@@ -11,7 +13,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class InstallNativeImageResourceUtils {
@@ -27,9 +29,9 @@ public class InstallNativeImageResourceUtils {
         resourceNameList.add("/i18n/install_en_US.properties");
         resourceNameList.add("/i18n/install_zh_CN.properties");
         try (InputStream assetJson = InstallNativeImageResourceUtils.class.getResourceAsStream("/install/asset-manifest.json")) {
-            Map<String, Object> assetMap = new Gson().fromJson(new String(assetJson.readAllBytes()), Map.class);
-            if (assetMap != null) {
-                resourceNameList.addAll(((Map<String, String>) assetMap.get("files")).values().stream().map(e -> {
+            InstallAssetManifest assetManifest = new Gson().fromJson(new String(assetJson.readAllBytes()), InstallAssetManifest.class);
+            if (assetManifest != null && Objects.nonNull(assetManifest.getFiles())) {
+                resourceNameList.addAll(assetManifest.getFiles().values().stream().map(e -> {
                     return e.replaceFirst("\\./", "/");
                 }).collect(Collectors.toList()));
             }
@@ -42,9 +44,12 @@ public class InstallNativeImageResourceUtils {
                 LastVersionInfo.class, InstallResultResponse.class,
                 TestConnectResponse.class, InstallResourceResponse.class,
                 InstallRuntimeResourceResponse.class, InstallProbeResponse.class,
+                InstallAssetManifest.class,
+                InstallApiResponses.Empty.class, InstallApiResponses.Message.class, InstallApiResponses.Error.class,
                 InstallProbeData.class, InstallProbeItem.class, InstallProgressEvent.class,
                 //vo
-                InstallConfigVO.class, InstallSuccessData.class));
+                InstallConfigVO.class, InstallDatabaseConfig.class, InstallSiteConfig.class,
+                InstallSuccessData.class));
     }
 
     public static void main(String[] args) {

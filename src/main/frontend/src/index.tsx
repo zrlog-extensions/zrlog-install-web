@@ -28,15 +28,22 @@ if (jsonStr && jsonStr !== "") {
 }
 
 const Index = () => {
-    const [dark, setDark] = useState<boolean>(EnvUtils.isDarkMode);
+    const [themeMode, setThemeMode] = useState(EnvUtils.getThemeMode);
+    const dark = EnvUtils.isDarkMode(themeMode);
 
     useEffect(() => {
         const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-        const changeHandler = () => setDark(EnvUtils.isDarkMode());
+        const changeHandler = () => setThemeMode(EnvUtils.getThemeMode());
 
         mediaQuery.addEventListener('change', changeHandler);
+        window.addEventListener(EnvUtils.themeModeChangeEvent, changeHandler);
+        window.addEventListener('storage', changeHandler);
 
-        return () => mediaQuery.removeEventListener('change', changeHandler);
+        return () => {
+            mediaQuery.removeEventListener('change', changeHandler);
+            window.removeEventListener(EnvUtils.themeModeChangeEvent, changeHandler);
+            window.removeEventListener('storage', changeHandler);
+        };
     }, []);
 
     return (

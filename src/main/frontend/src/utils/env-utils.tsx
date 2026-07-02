@@ -1,4 +1,9 @@
+export type ThemeMode = "light" | "dark" | "system";
+
 class EnvUtils {
+
+    static themeModeStorageKey = "zrlog-install-theme-mode";
+    static themeModeChangeEvent = "zrlog-install-theme-mode-change";
 
     static getPreferredColorScheme() {
         if (window.matchMedia) {
@@ -9,9 +14,35 @@ class EnvUtils {
         return 'light';
     }
 
+    static getThemeMode(): ThemeMode {
+        try {
+            const themeMode = window.localStorage.getItem(EnvUtils.themeModeStorageKey);
+            if (themeMode === "light" || themeMode === "dark" || themeMode === "system") {
+                return themeMode;
+            }
+        } catch (error) {
+            return "light";
+        }
+        return "light";
+    }
 
-    static isDarkMode() {
-        return EnvUtils.getPreferredColorScheme() === "dark";
+    static setThemeMode(themeMode: ThemeMode) {
+        try {
+            window.localStorage.setItem(EnvUtils.themeModeStorageKey, themeMode);
+        } catch (error) {
+            return;
+        }
+        window.dispatchEvent(new CustomEvent(EnvUtils.themeModeChangeEvent, {detail: themeMode}));
+    }
+
+    static isDarkMode(themeMode: ThemeMode = EnvUtils.getThemeMode()) {
+        if (themeMode === "dark") {
+            return true;
+        }
+        if (themeMode === "system") {
+            return EnvUtils.getPreferredColorScheme() === "dark";
+        }
+        return false;
     }
 }
 

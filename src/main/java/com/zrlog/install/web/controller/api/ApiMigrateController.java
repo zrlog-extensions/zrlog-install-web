@@ -8,12 +8,12 @@ import com.hibegin.common.util.IOUtil;
 import com.hibegin.common.util.LoggerUtil;
 import com.hibegin.http.server.util.PathUtil;
 import com.hibegin.http.server.web.Controller;
+import com.zrlog.install.business.response.InstallApiResponses;
 import com.zrlog.install.web.InstallConstants;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 import java.util.StringJoiner;
@@ -26,7 +26,7 @@ public class ApiMigrateController extends Controller {
 
     public void convertToSqliteSqlFile() throws FileNotFoundException {
         doConvert();
-        response.renderJson(new HashMap<>());
+        response.renderJson(new InstallApiResponses.Empty());
     }
 
     private void doConvert() throws FileNotFoundException {
@@ -80,7 +80,7 @@ public class ApiMigrateController extends Controller {
                 }
             }
         }
-        response.renderJson(new HashMap<>());
+        response.renderJson(new InstallApiResponses.Empty());
     }
 
     protected static boolean isBatchDropTableSql(String sql) {

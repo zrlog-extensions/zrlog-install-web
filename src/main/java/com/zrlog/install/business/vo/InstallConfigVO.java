@@ -4,25 +4,33 @@ import java.util.Map;
 
 public class InstallConfigVO {
 
-    private Map<String,String> dbConfig;
-    private Map<String,String> configMsg;
-    private Map<String,String> appendWebsite;
+    private InstallDatabaseConfig dbConfig;
+    private InstallSiteConfig configMsg;
+    private Map<String, String> appendWebsite;
     private String contextPath;
 
-    public Map<String, String> getDbConfig() {
+    public InstallDatabaseConfig getDbConfig() {
         return dbConfig;
     }
 
-    public void setDbConfig(Map<String, String> dbConfig) {
+    public void setDbConfig(InstallDatabaseConfig dbConfig) {
         this.dbConfig = dbConfig;
     }
 
-    public Map<String, String> getConfigMsg() {
+    public void setDbConfig(Map<String, String> dbConfig) {
+        this.dbConfig = InstallDatabaseConfig.from(dbConfig);
+    }
+
+    public InstallSiteConfig getConfigMsg() {
         return configMsg;
     }
 
-    public void setConfigMsg(Map<String, String> configMsg) {
+    public void setConfigMsg(InstallSiteConfig configMsg) {
         this.configMsg = configMsg;
+    }
+
+    public void setConfigMsg(Map<String, String> configMsg) {
+        this.configMsg = InstallSiteConfig.from(configMsg);
     }
 
     public Map<String, String> getAppendWebsite() {
