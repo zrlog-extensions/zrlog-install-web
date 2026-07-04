@@ -43,3 +43,4 @@ java -jar zrlog-install-web-starter.jar ./conf/demo-install.json ${YOUR_GITHUB_P
 
 关于该组件的二次开发机制与扩展说明，请阅读 [DEVELOPMENT.md](./DEVELOPMENT.md)。
 关于项目的改进功能建议汇总，请参看 [IMPROVEMENTS.md](./IMPROVEMENTS.md)。
+面向 AI Agent 和跨仓库开发的安装模块入口见 [AGENTS.md](AGENTS.md)。
