@@ -20,7 +20,7 @@
         <gpg.passphrase/>
     </properties>
 
-    <url>https://github.com/zrlog-extensions/zrlog-install-web</url>
+    <url>https://github.com/zrlog/zrlog-install-web</url>
     <description>ZrLog install web</description>
 
     <licenses>
@@ -37,13 +37,13 @@
         </developer>
     </developers>
     <scm>
-        <connection>scm:git:https://github.com/zrlog-extensions/zrlog-install-web</connection>
-        <developerConnection>scm:git:https://github.com/zrlog-extensions/zrlog-install-web</developerConnection>
-        <url>https://github.com/zrlog-extensions/zrlog-install-web</url>
+        <connection>scm:git:https://github.com/zrlog/zrlog-install-web</connection>
+        <developerConnection>scm:git:https://github.com/zrlog/zrlog-install-web</developerConnection>
+        <url>https://github.com/zrlog/zrlog-install-web</url>
     </scm>
     <issueManagement>
         <system>Github Issue</system>
-        <url>https://github.com/zrlog-extensions/zrlog-install-web</url>
+        <url>https://github.com/zrlog/zrlog-install-web</url>
     </issueManagement>
 
     <dependencies>
