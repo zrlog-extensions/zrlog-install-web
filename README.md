@@ -34,10 +34,12 @@ mvn clean package -PnodeBuild,jar
 java -jar zrlog-install-web-starter.jar
 ```
 
-非交互式/携带外部全局配置运行：
+非交互式/携带外部全局配置运行（配置文件由调用方维护）：
 ```bash
-java -jar zrlog-install-web-starter.jar ./conf/demo-install.json ${YOUR_GITHUB_PAT}
+java -jar zrlog-install-web-starter.jar /path/to/install-config.json ${YOUR_GITHUB_PAT}
 ```
+
+演示站点的定时重置任务及环境配置由内部运维任务维护，本工程只提供安装程序源码和构建产物。
 
 ## 开发相关资源
 
